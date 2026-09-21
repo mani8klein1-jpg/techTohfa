@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin-Bereich - TechStore</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="header-container">
+            <a href="index.html" class="logo">
+                <img src="bilder/logo.png" alt="TechStore Logo">
+            </a>
+            <nav>
+                <div class="suchleiste">
+                    <input type="text" id="suchInput" placeholder="🔍 Durchsuche TechTohfa" autocomplete="off">
+                    <button onclick="sucheAusfuehrenGlobal()">Suchen</button>
+                </div>
+                <ul>
+                    <li><a href="index.html">Produkte</a></li>
+                    <li><a href="warenkorb.html" class="cart-icon">
+                            <span class="cart-count" id="cartCount">0</span>
+                            🛒 Warenkorb
+                        </a></li>
+                    <li id="loginLink"><a href="login.html">Anmelden</a></li>
+                    <li id="userMenu" style="display:none; position:relative;">
+                        <a href="#" id="userName" onclick="toggleDropdown(event)">👤 <span id="userNameText">Benutzer</span> ▾</a>
+                        <div id="userDropdown" class="user-dropdown">
+                            <a href="bestellungen.html">📦 Meine Bestellungen</a>
+                            
+                            <a href="#" onclick="logout()">🚪 Abmelden</a>
+                        </div>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="container">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h1>Admin-Bereich</h1>
+            <button class="btn btn-primary" onclick="oeffneProduktModal()">+ Neues Produkt</button>
+        </div>
+        
+        <p style="color:#888; margin-top:5px;">Produkte verwalten (anlegen, bearbeiten, löschen)</p>
+        
+        <div id="adminInhalt" style="margin-top:30px;">
+            <!-- Wird per JavaScript gefüllt -->
+        </div>
+    </main>
+
+    <!-- MODAL -->
+    <div id="produktModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:8px; padding:30px; max-width:500px; width:90%; max-height:90vh; overflow-y:auto;">
+            <h2 id="modalTitel" style="margin-bottom:20px;">Neues Produkt</h2>
+            
+            <form id="produktForm" onsubmit="speichereProdukt(event)">
+                <input type="hidden" id="produktId">
+                
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" required placeholder="z. B. Gaming Maus">
+                </div>
+                
+                <div class="form-group">
+                    <label for="beschreibung">Beschreibung</label>
+                    <input type="text" id="beschreibung" placeholder="z. B. RGB-Beleuchtung, 16000 DPI">
+                </div>
+                
+                <div class="form-group">
+                    <label for="preis">Preis (€)</label>
+                    <input type="number" id="preis" step="0.01" min="0" required placeholder="49.99">
+                </div>
+                
+                <div class="form-group">
+                    <label for="lagerbestand">Lagerbestand</label>
+                    <input type="number" id="lagerbestand" min="0" required placeholder="25">
+                </div>
+                
+                <div class="form-group">
+                    <label for="bild_url">Bild-URL</label>
+                    <input type="text" id="bild_url" placeholder="bilder/gm1.png">
+                </div>
+                
+                <div class="form-group">
+                    <label for="kategorie_id">Kategorie</label>
+                    <select id="kategorie_id" required style="width:100%; padding:12px 15px; font-size:15px; border:1px solid #ddd; border-radius:4px;">
+                        <!-- Wird per JavaScript gefüllt -->
+                    </select>
+                </div>
+                
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="submit" class="btn btn-primary" style="flex:1;">Speichern</button>
+                    <button type="button" class="btn" onclick="schliesseProduktModal()" style="flex:1;">Abbrechen</button>
+                </div>
+                
+                <p id="modalMessage" style="margin-top:15px; text-align:center;"></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer>
+        &copy; 2026 TechStore - Alle Rechte vorbehalten
+    </footer>
+
+    <script src="js/api.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+</html>

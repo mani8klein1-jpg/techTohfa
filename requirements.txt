@@ -1,0 +1,24 @@
+# ========================================
+# TECHSTORE - EINKAUFSLISTE
+# ========================================
+
+# Die Küche (Web-Framework)
+fastapi==0.115.6
+
+# Der Kellner (Server)
+uvicorn[standard]==0.34.0
+
+# Der Lagermeister (Datenbank-ORM)
+sqlalchemy==2.0.36
+
+# Der Geheimcode (Umgebungsvariablen)
+python-dotenv==1.0.1
+
+# Der Türsteher (JWT)
+python-jose[cryptography]==3.3.0
+
+# Der Tresor (Passwort-Hashing)
+bcrypt==4.2.1
+
+# Das Formular (Formulare)
+python-multipart==0.0.20

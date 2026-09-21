@@ -1,0 +1,30 @@
+# Virtuelle Umgebung
+venv/
+
+# Python-Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Umgebungsvariablen (geheim!)
+.env
+
+# SQLite-Datenbank
+*.db
+*.sqlite
+*.sqlite3
+
+# System
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.log
+
+# Persönliche Notizen
+*.txt
+!requirements.txt

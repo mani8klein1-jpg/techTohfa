@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+
+# Datenbank
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Umgebungsvariablen (WICHTIG!)
+.env
+
+# IDE
+.vscode/
+.idea/
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+# Persönliche Notizen
+*.txt
+!requirements.txt
