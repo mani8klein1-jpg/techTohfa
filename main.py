@@ -11,7 +11,7 @@ from datetime import timedelta
 from fastapi.responses import JSONResponse
 from fastapi import Request
 
-from database import Base, engine, SessionLocal
+from database import Base, engine, SessionLocal, get_db
 import models
 import schemas
 import auth
@@ -46,17 +46,6 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 # DATENBANK-TABELLEN ERSTELLEN
 # ========================================
 Base.metadata.create_all(bind=engine)
-
-# ========================================
-# DATENBANK-SESSION
-# ========================================
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # ========================================
 # STARTPUNKT
@@ -269,7 +258,7 @@ def get_warenkorb(
     """Warenkorb des aktuellen Benutzers anzeigen"""
     return db.query(models.Warenkorb).filter(models.Warenkorb.benutzer_id == current_user.id).all()
 
-@app.put("/warenkorb/{eintrag_id}", response_model=schemas.WarenkorbResponse)
+@app.put("/warenkorb/{eintrag_id}")
 def update_warenkorb(
     eintrag_id: int,
     daten: schemas.WarenkorbUpdate,

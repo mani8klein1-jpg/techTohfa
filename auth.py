@@ -12,7 +12,7 @@ from jose import JWTError, jwt
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from database import SessionLocal
+from database import SessionLocal, get_db
 import models
 import os
 import bcrypt
@@ -78,7 +78,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
     """Prüft den Token und gibt den Benutzer zurück"""
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -97,10 +100,8 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     except JWTError:
         raise credentials_exception
     
-    # Datenbank-Session erstellen
-    db = SessionLocal()
+    # Datenbank-Session verwenden (aus get_db)
     benutzer = db.query(models.Benutzer).filter(models.Benutzer.email == email).first()
-    db.close()
     
     if benutzer is None:
         raise credentials_exception

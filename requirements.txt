@@ -22,3 +22,19 @@ bcrypt==4.2.1
 
 # Das Formular (Formulare)
 python-multipart==0.0.20
+
+pytest
+pytest-cov
+httpx
+
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+python-jose[cryptography]
+bcrypt
+python-dotenv
+python-multipart
+pytest
+pytest-cov
+httpx
