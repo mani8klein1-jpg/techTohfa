@@ -1,4 +1,4 @@
-# TechStore – E-Commerce-Shop
+# TechTohfa – E-Commerce-Shop
 
 Ein vollständiger Online-Shop mit FastAPI (Backend) und Vanilla JavaScript (Frontend).
 
