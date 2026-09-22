@@ -1,0 +1,18 @@
+# ========================================
+# TECHSTORE FRONTEND
+# ========================================
+
+# Python 3.12 als Basis
+FROM python:3.12-slim
+
+# Arbeitsverzeichnis
+WORKDIR /app
+
+# Frontend-Dateien kopieren
+COPY frontend/ .
+
+# Port freigeben
+EXPOSE 5500
+
+# HTTP-Server starten
+CMD ["python", "-m", "http.server", "5500"]

@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+env/
+.pytest_cache/
+.coverage
+
+# Datenbank
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Umgebungsvariablen (WICHTIG!)
+.env
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Tests (werden nicht im Container gebraucht)
+tests/
+
+# Docker
+Dockerfile
+Dockerfile.frontend
+docker-compose.yml
+.dockerignore
+
+# Dokumentation
+*.md
+# Persönliche Notizen (aber requirements.txt behalten!)
+*.txt
+!requirements.txt

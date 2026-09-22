@@ -1,0 +1,30 @@
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techstore-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./techstore.db:/app/techstore.db      
+    environment:
+      - DATABASE_URL=sqlite:///./techstore.db
+      - SECRET_KEY=techstore-geheimer-schluessel-2026
+      - ALGORITHM=HS256
+      - ACCESS_TOKEN_EXPIRE_MINUTES=10080
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    container_name: techstore-frontend
+    ports:
+      - "5500:5500"
+    volumes:      
+      - ./frontend/bilder:/app/bilder
+    depends_on:
+      - backend
+    restart: unless-stopped
