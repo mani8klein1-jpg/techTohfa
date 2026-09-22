@@ -14,8 +14,8 @@ import os
 # Lade die Umgebungsvariablen aus der .env-Datei
 load_dotenv()
 
-# Die Datenbank-URL aus der .env-Datei holen
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Standardwert, falls .env fehlt (z. B. in CI/CD)
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./techstore.db")
 
 # Der Engine ist die "Maschine", die die Datenbank steuert
 engine = create_engine(
