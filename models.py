@@ -57,8 +57,8 @@ class Benutzer(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     passwort_hash = Column(String, nullable=False)
-    erstellt_am = Column(DateTime, default=datetime.utcnow)
-    ist_admin = Column(Boolean, default=False)   # ← NEU
+    erstellt_am = Column(DateTime(timezone=True), default=lambda: datetime.now(datetime.UTC))
+    ist_admin = Column(Boolean, default=False)
 
 
 # ========================================

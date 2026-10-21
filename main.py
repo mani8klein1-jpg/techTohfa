@@ -412,7 +412,29 @@ def delete_bestellung(
 # TEMPORÄR: SEED-ROUTE FÜR RENDER (DEBUG)
 # ========================================
 
+@app.get("/debug-admin")
+def debug_admin():
+    from database import SessionLocal
+    import models
+    db = SessionLocal()
+    benutzer = db.query(models.Benutzer).all()
+    ergebnis = [{"email": b.email, "ist_admin": b.ist_admin, "erstellt_am": str(b.erstellt_am)} for b in benutzer]
+    db.close()
+    return ergebnis
 
+@app.get("/fix-admin-date")
+def fix_admin_date():
+    from database import SessionLocal
+    import models
+    from datetime import datetime
+    db = SessionLocal()
+    benutzer = db.query(models.Benutzer).all()
+    for b in benutzer:
+        if b.erstellt_am is None:
+            b.erstellt_am = datetime.now(datetime.UTC)
+    db.commit()
+    db.close()
+    return {"message": "Datum repariert!"}
 
 
 # Die App starten
