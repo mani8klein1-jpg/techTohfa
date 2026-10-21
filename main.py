@@ -481,6 +481,25 @@ def delete_bestellung(
     
     return {"message": "Bestellung gelöscht"}
 
+# ========================================
+# TEMPORÄR: SEED-ROUTE FÜR RENDER
+# ========================================
+# Diese Route führt das Seed-Skript aus.
+# Nach der Nutzung wieder entfernen!
+
+@app.get("/admin-seed")
+def run_seed():
+    import subprocess
+    result = subprocess.run(
+        ["python", "seed.py"],
+        capture_output=True,
+        text=True
+    )
+    return {
+        "stdout": result.stdout,
+        "stderr": result.stderr,
+        "returncode": result.returncode
+    }
 
 # Die App starten
 if __name__ == "__main__":

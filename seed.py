@@ -4,16 +4,32 @@
 # Legt Startdaten an: Kategorien + Admin
 # Sicher dank ON CONFLICT DO NOTHING
 
+import os
 import psycopg2
 import bcrypt
+from dotenv import load_dotenv
 
-# Verbindung zur PostgreSQL-DB
-conn = psycopg2.connect(
-    host="db",
-    database="techstore",
-    user="techstore",
-    password="techstore123"
-)
+# Lade .env (für lokal)
+load_dotenv()
+
+# Prüfe, ob wir auf Render sind (DATABASE_URL existiert)
+db_url = os.getenv("DATABASE_URL")
+
+if db_url:
+    # Auf Render: Nutze die DATABASE_URL
+    # Wichtig: Render gibt manchmal postgres:// statt postgresql:// aus
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    conn = psycopg2.connect(db_url)
+else:
+    # Lokal (Docker): Nutze die festen Zugangsdaten
+    conn = psycopg2.connect(
+        host="db",
+        database="techstore",
+        user="techstore",
+        password="techstore123"
+    )
+
 cur = conn.cursor()
 
 # ========================================
