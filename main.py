@@ -22,12 +22,8 @@ app = FastAPI(title="TechStore API")
 # CORS erlauben
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:5500",              # Lokal
-        "http://localhost:5500",              # Lokal
-        "https://techtohfa-frontend.onrender.com"  # Deine Render-Frontend-URL
-    ],
-    allow_credentials=True,
+    allow_origins=["*"],              # Erlaubt ALLE Origins
+    allow_credentials=False,          # WICHTIG: Muss False sein bei "*"
     allow_methods=["*"],
     allow_headers=["*"],
 )
