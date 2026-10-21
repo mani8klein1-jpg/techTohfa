@@ -7,7 +7,7 @@
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean, Text
 from sqlalchemy.orm import relationship
 from database import Base
-from datetime import datetime
+from datetime import datetime, timezone
 
 # ========================================
 # KATEGORIEN
@@ -57,7 +57,7 @@ class Benutzer(Base):
     name = Column(String, nullable=False)
     email = Column(String, unique=True, index=True, nullable=False)
     passwort_hash = Column(String, nullable=False)
-    erstellt_am = Column(DateTime(timezone=True), default=lambda: datetime.now(datetime.UTC))
+    erstellt_am = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     ist_admin = Column(Boolean, default=False)
 
 

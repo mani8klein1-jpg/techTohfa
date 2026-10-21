@@ -407,7 +407,21 @@ def delete_bestellung(
 # ========================================
 # TEMPORÄR: SEED-ROUTE FÜR RENDER (DEBUG)
 # ========================================
-
+ 
+ 
+@app.get("/fix-admin-date")
+def fix_admin_date():
+    from database import SessionLocal
+    import models
+    from datetime import datetime, timezone
+    db = SessionLocal()
+    benutzer = db.query(models.Benutzer).all()
+    for b in benutzer:
+        if b.erstellt_am is None:
+            b.erstellt_am = datetime.now(timezone.utc)
+    db.commit()
+    db.close()
+    return {"message": "Datum repariert!"}
 
 
 
