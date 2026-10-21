@@ -408,31 +408,8 @@ def delete_bestellung(
 # TEMPORÄR: SEED-ROUTE FÜR RENDER (DEBUG)
 # ========================================
 
-@app.get("/admin-seed")
-def run_seed():
-    import subprocess
-    import os
-    result = subprocess.run(
-        ["python", "seed.py"],
-        capture_output=True,
-        text=True,
-        env=os.environ
-    )
-    return {
-        "stdout": result.stdout,
-        "stderr": result.stderr,
-        "returncode": result.returncode
-    }
 
-@app.get("/debug-admin")
-def debug_admin():
-    from database import SessionLocal
-    import models
-    db = SessionLocal()
-    benutzer = db.query(models.Benutzer).all()
-    ergebnis = [{"email": b.email, "ist_admin": b.ist_admin} for b in benutzer]
-    db.close()
-    return ergebnis
+
 
 # Die App starten
 if __name__ == "__main__":
