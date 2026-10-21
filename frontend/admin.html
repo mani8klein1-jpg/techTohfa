@@ -13,17 +13,23 @@
 
     <!-- HEADER -->
     <header>
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <img src="bilder/logo.png" alt="TechStore Logo">
-            </a>
-            <nav>
+    <div class="header-container">
+        <!-- Hamburger Button (nur auf Handy sichtbar) -->
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+
+        <a href="index.html" class="logo">
+            <img src="bilder/logo.png" alt="TechStore Logo">
+        </a>
+
+                <nav id="mainNav">
+            <!-- Schließen-Button: Ganz oben links im Menü -->
+            <button class="close-menu-btn" onclick="toggleMobileMenu()">✕</button>
                 <div class="suchleiste">
                     <input type="text" id="suchInput" placeholder="🔍 Durchsuche TechTohfa" autocomplete="off">
                     <button onclick="sucheAusfuehrenGlobal()">Suchen</button>
                 </div>
                 <ul>
-                    <li><a href="index.html">Produkte</a></li>
+                    <li><a href="index.html">🏠 Produkte</a></li>
                     <li><a href="warenkorb.html" class="cart-icon">
                             <span class="cart-count" id="cartCount">0</span>
                             🛒 Warenkorb

@@ -28,37 +28,32 @@ async function loadProdukt(id) {
         const produkt = await getProdukt(id);
         const container = document.getElementById('produktDetail');
         
-        container.innerHTML = `
-            <div style="display:flex; gap:40px; background:white; padding:40px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.08); flex-wrap:wrap;">
-                <div style="flex:1; min-width:300px;">
-                    <img src="${produkt.bild_url || 'https://via.placeholder.com/500x400'}" 
-                         alt="${produkt.name}" 
-                         style="width:100%; border-radius:8px;">
-                </div>
-                <div style="flex:1; min-width:300px;">
-                    <h1 style="font-size:32px; margin-bottom:10px;">${produkt.name}</h1>
-                    <p style="color:#888; margin-bottom:20px;">${produkt.beschreibung || ''}</p>
-                    <p style="font-size:32px; font-weight:700; color:#e94560; margin-bottom:20px;">
-                        ${produkt.preis.toFixed(2)} €
-                    </p>
-                    <p style="color:#4caf50; margin-bottom:25px;">
-                        ✓ ${produkt.lagerbestand} auf Lager
-                    </p>
-                    
-                    <div style="display:flex; gap:10px; align-items:center; margin-bottom:20px;">
-                        <button class="btn" onclick="changeMenge(-1)">−</button>
-                        <span id="menge" style="font-size:20px; font-weight:700; min-width:40px; text-align:center;">1</span>
-                        <button class="btn" onclick="changeMenge(1)">+</button>
+               container.innerHTML = `
+                <div class="produkt-detail-wrapper">
+                    <div class="produkt-detail-bild">
+                        <img src="${produkt.bild_url || 'https://via.placeholder.com/500x400'}" 
+                            alt="${produkt.name}">
                     </div>
-                    
-                    <button class="btn btn-primary btn-block" onclick="addToCart(${produkt.id})">
-                        🛒 In den Warenkorb
-                    </button>
-                    
-                    <p id="message" style="margin-top:15px; text-align:center;"></p>
+                    <div class="produkt-detail-info">
+                        <h1>${produkt.name}</h1>
+                        <p class="beschreibung">${produkt.beschreibung || ''}</p>
+                        <p class="preis">${produkt.preis.toFixed(2)} €</p>
+                        <p class="lager">✓ ${produkt.lagerbestand} auf Lager</p>
+                        
+                        <div class="mengen-selector">
+                            <button class="btn" onclick="changeMenge(-1)">−</button>
+                            <span id="menge">1</span>
+                            <button class="btn" onclick="changeMenge(1)">+</button>
+                        </div>
+                        
+                        <button class="btn btn-primary btn-block" onclick="addToCart(${produkt.id})">
+                            🛒 In den Warenkorb
+                        </button>
+                        
+                        <p id="message" style="margin-top:15px; text-align:center;"></p>
+                    </div>
                 </div>
-            </div>
-        `;
+              `;
         
     } catch (error) {
         console.error('Fehler:', error);

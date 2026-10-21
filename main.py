@@ -125,6 +125,31 @@ def create_kategorie(kategorie: schemas.KategorieCreate, db: Session = Depends(g
     db.refresh(neue_kategorie)
     return neue_kategorie
 
+
+@app.delete("/kategorien/{kategorie_id}")
+def delete_kategorie(
+    kategorie_id: int,
+    current_user: models.Benutzer = Depends(auth.get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Kategorie löschen (nur Admin)"""
+    if not current_user.ist_admin:
+        raise HTTPException(status_code=403, detail="Nur Admins dürfen Kategorien löschen")
+    
+    kategorie = db.query(models.Kategorie).filter(models.Kategorie.id == kategorie_id).first()
+    
+    if not kategorie:
+        raise HTTPException(status_code=404, detail="Kategorie nicht gefunden")
+    
+    # Prüfen, ob Produkte in dieser Kategorie sind
+    produkte = db.query(models.Produkt).filter(models.Produkt.kategorie_id == kategorie_id).count()
+    if produkte > 0:
+        raise HTTPException(status_code=400, detail=f"Kategorie hat {produkte} Produkte")
+    
+    db.delete(kategorie)
+    db.commit()
+    return {"message": "Kategorie gelöscht"}
+
 # ========================================
 # PRODUKTE - ENDPUNKTE
 # ========================================

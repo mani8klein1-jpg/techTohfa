@@ -1,9 +1,6 @@
 # ========================================
 # DATENBANK-VERBINDUNG
 # ========================================
-# Diese Datei kümmert sich um die Verbindung
-# zur Datenbank. Wir nutzen SQLite für die
-# Entwicklung.
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -11,22 +8,22 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 import os
 
-# Lade die Umgebungsvariablen aus der .env-Datei
 load_dotenv()
 
-# Standardwert, falls .env fehlt (z. B. in CI/CD)
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./techstore.db")
 
-# Der Engine ist die "Maschine", die die Datenbank steuert
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False}
-)
+# Engine erstellen - je nach Datenbank-Typ
+if DATABASE_URL.startswith("sqlite"):
+    # SQLite braucht check_same_thread=False
+    engine = create_engine(
+        DATABASE_URL,
+        connect_args={"check_same_thread": False}
+    )
+else:
+    # PostgreSQL (Render) braucht dieses Argument NICHT
+    engine = create_engine(DATABASE_URL)
 
-# Die SessionLocal ist eine "Sitzung", mit der wir Abfragen machen
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Die Base ist die "Basis", von der alle Tabellen erben
 Base = declarative_base()
 
 def get_db():

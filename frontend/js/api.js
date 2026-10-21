@@ -4,8 +4,7 @@
 // Diese Datei kümmert sich um die Kommunikation
 // mit dem Backend.
 
-const API_URL = 'http://127.0.0.1:8000';
-
+const API_URL = 'https://techtohfa-backend.onrender.com';
 // ========================================
 // TOKEN-VERWALTUNG
 // ========================================
@@ -264,3 +263,13 @@ async function deleteProdukt(produktId) {
     return await response.json();
 }
 
+// ========================================
+// HAMBURGER-MENÜ STEUERUNG
+// ========================================
+
+function toggleMobileMenu() {
+    const nav = document.getElementById('mainNav');
+    if (nav) {
+        nav.classList.toggle('open');
+    }
+}

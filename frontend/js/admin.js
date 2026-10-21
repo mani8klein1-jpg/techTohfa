@@ -82,22 +82,22 @@ function zeigeProdukteAdmin() {
         const kategorieName = kategorie ? kategorie.name : '–';
         
         html += `
-            <div class="admin-produkt" style="background:white; border-radius:8px; padding:20px; margin-bottom:15px; display:flex; align-items:center; gap:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+            <div class="admin-produkt">
                 <img src="${produkt.bild_url || 'https://via.placeholder.com/80x80'}" 
                      alt="${produkt.name}" 
-                     style="width:80px; height:80px; object-fit:cover; border-radius:6px; background:#f9f9f9;">
+                     class="admin-produkt-img">
                 
-                <div style="flex:1;">
-                    <h3 style="font-size:18px; margin-bottom:5px;">${produkt.name}</h3>
-                    <p style="color:#888; font-size:14px; margin-bottom:5px;">${produkt.beschreibung || ''}</p>
-                    <p style="font-size:14px; color:#555;">
-                        <strong style="color:#e94560;">${produkt.preis.toFixed(2)} €</strong>
+                <div class="admin-produkt-info">
+                    <h3>${produkt.name}</h3>
+                    <p class="admin-produkt-beschreibung">${produkt.beschreibung || ''}</p>
+                    <p class="admin-produkt-details">
+                        <strong>${produkt.preis.toFixed(2)} €</strong>
                         · ${produkt.lagerbestand} auf Lager
                         · ${kategorieName}
                     </p>
                 </div>
                 
-                <div style="display:flex; gap:8px;">
+                <div class="admin-produkt-actions">
                     <button class="btn" onclick="bearbeiteProdukt(${produkt.id})" 
                             style="background:#2196f3; padding:8px 14px; font-size:13px;">
                         ✏️ Bearbeiten

@@ -18,7 +18,7 @@ class Kategorie(Base):
     __tablename__ = "kategorien"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)    # ← unique=True
     beschreibung = Column(Text, nullable=True)
 
     # Beziehung: Eine Kategorie hat viele Produkte
