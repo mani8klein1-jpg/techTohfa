@@ -426,12 +426,12 @@ def debug_admin():
 def fix_admin_date():
     from database import SessionLocal
     import models
-    from datetime import datetime
+    from datetime import datetime, timezone
     db = SessionLocal()
     benutzer = db.query(models.Benutzer).all()
     for b in benutzer:
         if b.erstellt_am is None:
-            b.erstellt_am = datetime.now(datetime.UTC)
+            b.erstellt_am = datetime.now(timezone.utc)
     db.commit()
     db.close()
     return {"message": "Datum repariert!"}
