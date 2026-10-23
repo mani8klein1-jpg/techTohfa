@@ -401,6 +401,7 @@ def delete_warenkorb(
 
 @app.post("/bestellungen", response_model=schemas.BestellungResponse)
 def create_bestellung(
+    adresse: schemas.BestellungCreate, 
     background_tasks: BackgroundTasks,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
@@ -435,10 +436,15 @@ def create_bestellung(
             "preis": produkt.preis
         })
     
-    neue_bestellung = models.Bestellung(
+        neue_bestellung = models.Bestellung(
         benutzer_id=current_user.id,
         gesamtpreis=round(gesamtpreis, 2),
-        status="offen"
+        status="offen",
+        vorname=adresse.vorname,
+        nachname=adresse.nachname,
+        strasse=adresse.strasse,
+        plz=adresse.plz,
+        ort=adresse.ort
     )
     db.add(neue_bestellung)
     db.commit()
@@ -474,10 +480,10 @@ def create_bestellung(
             "preis": pos["preis"]
         })
 
-    background_tasks.add_task(
+        background_tasks.add_task(
         sende_bestaetigungs_email,
         current_user.email,
-        current_user.name,
+        f"{adresse.vorname} {adresse.nachname}", # <-- NEU
         neue_bestellung.id,
         neue_bestellung.gesamtpreis,
         positionen_fuer_email
@@ -529,9 +535,22 @@ def delete_bestellung(
     db.commit()
     return {"message": "Bestellung gelöscht"}
 
-# ========================================
-# TEMPORÄR: SEED-ROUTE FÜR RENDER (DEBUG)
-# ========================================
+
+@app.get("/migrate-bestellung")
+def migrate_bestellung():
+    from database import engine
+    from sqlalchemy import text
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS vorname VARCHAR;"))
+            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS nachname VARCHAR;"))
+            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS strasse VARCHAR;"))
+            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS plz VARCHAR;"))
+            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS ort VARCHAR;"))
+            conn.commit()
+        return {"message": "Migration erfolgreich!"}
+    except Exception as e:
+        return {"error": str(e)}
  
  
 

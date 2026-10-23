@@ -92,7 +92,14 @@ class Bestellung(Base):
     # Beziehung: Eine Bestellung hat viele Positionen
     positionen = relationship("Bestellposition", back_populates="bestellung")
 
+    # NEU: Lieferadresse
+    vorname = Column(String, nullable=True)
+    nachname = Column(String, nullable=True)
+    strasse = Column(String, nullable=True)
+    plz = Column(String, nullable=True)
+    ort = Column(String, nullable=True)
 
+    positionen = relationship("Bestellposition", back_populates="bestellung")
 # ========================================
 # BESTELLPOSITIONEN
 # ========================================

@@ -153,16 +153,30 @@ async function bestellen() {
     if (!confirm('Möchten Sie die Bestellung wirklich aufgeben?')) return;
     
     try {
-        const bestellung = await createBestellung();
-        
-        // Bestelldaten in sessionStorage speichern
-        sessionStorage.setItem('bestellungErfolgt', 'true');
-        sessionStorage.setItem('bestellnummer', bestellung.id);
-        sessionStorage.setItem('bestellpreis', bestellung.gesamtpreis.toFixed(2));
-        sessionStorage.setItem('lieferadresse', `${vorname} ${nachname}, ${adresse}, ${plz} ${ort}`);
-        
-        // Seite neu laden → zeigt Danke-Seite
-        window.location.reload();
+        // Adressdaten sammeln
+        const adressDaten = {
+            vorname: vorname,
+            nachname: nachname,
+            strasse: adresse,
+            plz: plz,
+            ort: ort
+        };
+
+        // An das Backend senden
+        const response = await fetch(`${API_URL}/bestellungen`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            },
+            body: JSON.stringify(adressDaten)
+        });
+
+        if (!response.ok) {
+            throw new Error('Fehler beim Bestellen');
+        }
+
+        const bestellung = await response.json();
         
     } catch (error) {
         message.textContent = '✗ Fehler beim Bestellen.';
