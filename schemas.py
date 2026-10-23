@@ -143,9 +143,9 @@ class BestellungResponse(BaseModel):
     class Config:
         from_attributes = True
 
-class BestellungCreate(BaseModel):
-    vorname: str
-    nachname: str
-    strasse: str
-    plz: str
-    ort: str    
+    class BestellungCreate(BaseModel):
+        vorname: str
+        nachname: str
+        strasse: str
+        plz: str
+        ort: str    
