@@ -536,22 +536,7 @@ def delete_bestellung(
     return {"message": "Bestellung gelöscht"}
 
 
-@app.get("/migrate-bestellung")
-def migrate_bestellung():
-    from database import engine
-    from sqlalchemy import text
-    try:
-        with engine.connect() as conn:
-            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS vorname VARCHAR;"))
-            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS nachname VARCHAR;"))
-            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS strasse VARCHAR;"))
-            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS plz VARCHAR;"))
-            conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS ort VARCHAR;"))
-            conn.commit()
-        return {"message": "Migration erfolgreich! Spalten hinzugefügt."}
-    except Exception as e:
-        return {"error": str(e)}
- 
+
  
 
 
