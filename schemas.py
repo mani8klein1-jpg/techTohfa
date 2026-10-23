@@ -143,7 +143,7 @@ class BestellungResponse(BaseModel):
     class Config:
         from_attributes = True
 
-    class BestellungCreate(BaseModel):
+class BestellungCreate(BaseModel):
     vorname: str
     nachname: str
     strasse: str
