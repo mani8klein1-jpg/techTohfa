@@ -20,8 +20,8 @@ import schemas
 import auth
 
 
-def sende_bestaetigungs_email(empfaenger_email: str, bestellnummer: int, gesamtpreis: float):
-    """Sendet eine Test-Bestätigung über die Brevo API."""
+def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnummer: int, gesamtpreis: float, positionen: list):
+    """Sendet eine gestaltete HTML-Bestätigung über die Brevo API."""
     api_key = os.getenv("BREVO_API_KEY")
     sender_email = os.getenv("SMTP_SENDER")
 
@@ -29,22 +29,76 @@ def sende_bestaetigungs_email(empfaenger_email: str, bestellnummer: int, gesamtp
         print("Brevo-Konfiguration fehlt – E-Mail wird nicht gesendet.")
         return
 
+    # Produktliste als HTML-Tabelle aufbauen
+    positionen_html = ""
+    for pos in positionen:
+        positionen_html += f"""
+        <tr>
+            <td style="padding: 10px; border-bottom: 1px solid #eee;">{pos['name']}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">{pos['menge']}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">{pos['preis'] * pos['menge']:.2f} €</td>
+        </tr>
+        """
+
     body = f"""
-    Hallo,
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: 'Roboto Condensed', Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }}
+            .container {{ max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+            .header {{ background-color: #1a1a1a; padding: 20px; text-align: center; }}
+            .header h1 {{ color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px; }}
+            .header h1 span {{ color: #e94560; }}
+            .content {{ padding: 30px; color: #333333; }}
+            .content h2 {{ font-size: 20px; margin-bottom: 10px; }}
+            .content p {{ font-size: 15px; line-height: 1.6; margin-bottom: 15px; }}
+            .order-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            .order-table th {{ background: #f9f9f9; padding: 10px; text-align: left; font-size: 14px; border-bottom: 2px solid #ddd; }}
+            .order-table td {{ font-size: 14px; }}
+            .total {{ text-align: right; font-size: 18px; font-weight: bold; color: #e94560; margin-top: 20px; }}
+            .footer {{ background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #888888; }}
+            .test-hint {{ background-color: #fff3cd; color: #856404; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 14px; border-left: 4px solid #ffc107; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>TECH<span>TOHFA</span></h1>
+            </div>
+            <div class="content">
+                <h2>Hallo {kunden_name},</h2>
+                <p>vielen Dank für deine Bestellung bei TechTOHFA! Wir haben deine Bestellung erhalten und bearbeiten sie umgehend.</p>
+                
+                <div class="test-hint">
+                    ⚠️ <strong>WICHTIG:</strong> Dies ist eine TEST-BESTELLUNG! Es handelt sich um ein Portfolio-Projekt. Es wurde kein echter Kauf getätigt und es wird kein Geld abgebucht.
+                </div>
 
-    vielen Dank für deine Bestellung bei TechTOHFA!
-
-    ⚠️ WICHTIGER HINWEIS: Dies ist eine TEST-BESTELLUNG! ⚠️
-    Es handelt sich hierbei um ein Portfolio-Projekt. 
-    Es wurde KEIN echter Kauf getätigt und es wird kein Geld abgebucht.
-
-    ---
-    Bestellnummer: #{bestellnummer}
-    Gesamtpreis: {gesamtpreis:.2f} €
-    ---
-
-    Viele Grüße
-    Dein TechTOHFA-Team
+                <h3>Deine Bestellung (#{bestellnummer})</h3>
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th style="text-align: center;">Menge</th>
+                            <th style="text-align: right;">Preis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {positionen_html}
+                    </tbody>
+                </table>
+                <div class="total">Gesamt: {gesamtpreis:.2f} €</div>
+                
+                <p style="margin-top: 30px;">Wir wünschen dir viel Freude mit deiner Bestellung!</p>
+                <p>Viele Grüße,<br>Dein TechTOHFA-Team</p>
+            </div>
+            <div class="footer">
+                &copy; 2026 TechTOHFA - Alle Rechte vorbehalten
+            </div>
+        </div>
+    </body>
+    </html>
     """
 
     url = "https://api.brevo.com/v3/smtp/email"
@@ -56,8 +110,8 @@ def sende_bestaetigungs_email(empfaenger_email: str, bestellnummer: int, gesamtp
     payload = {
         "sender": {"email": sender_email, "name": "TechTOHFA"},
         "to": [{"email": empfaenger_email}],
-        "subject": f"Deine Test-Bestellung bei TechTOHFA (#{bestellnummer})",
-        "textContent": body
+        "subject": f"Deine Bestellung bei TechTOHFA (#{bestellnummer})",
+        "htmlContent": body  # WICHTIG: htmlContent statt textContent!
     }
 
     try:
@@ -410,11 +464,23 @@ def create_bestellung(
     
     db.commit()
     db.refresh(neue_bestellung)
+        # Produktnamen für die E-Mail sammeln
+    positionen_fuer_email = []
+    for pos in positionen:
+        produkt = db.query(models.Produkt).filter(models.Produkt.id == pos["produkt_id"]).first()
+        positionen_fuer_email.append({
+            "name": produkt.name,
+            "menge": pos["menge"],
+            "preis": pos["preis"]
+        })
+
     background_tasks.add_task(
         sende_bestaetigungs_email,
         current_user.email,
+        current_user.name,
         neue_bestellung.id,
-        neue_bestellung.gesamtpreis
+        neue_bestellung.gesamtpreis,
+        positionen_fuer_email
     )
     return neue_bestellung
 
