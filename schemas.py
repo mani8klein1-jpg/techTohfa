@@ -147,4 +147,5 @@ class BestellungResponse(BaseModel):
         nachname: str
         strasse: str
         plz: str
-        ort: str    
+        ort: str  
+          
