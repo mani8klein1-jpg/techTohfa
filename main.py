@@ -548,7 +548,7 @@ def migrate_bestellung():
             conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS plz VARCHAR;"))
             conn.execute(text("ALTER TABLE bestellungen ADD COLUMN IF NOT EXISTS ort VARCHAR;"))
             conn.commit()
-        return {"message": "Migration erfolgreich!"}
+        return {"message": "Migration erfolgreich! Spalten hinzugefügt."}
     except Exception as e:
         return {"error": str(e)}
  
