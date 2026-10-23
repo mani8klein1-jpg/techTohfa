@@ -135,8 +135,7 @@ class BestellungResponse(BaseModel):
     id: int
     benutzer_id: int
     gesamtpreis: float
-    status: str
-    erstellt_am: datetime
+    status: str    
     erstellt_am: datetime
     positionen: List[BestellpositionResponse] = []
 
