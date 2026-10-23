@@ -39,3 +39,4 @@ pytest
 pytest-cov
 httpx
 psycopg2-binary
+requests

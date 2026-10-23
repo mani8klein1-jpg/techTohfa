@@ -2,6 +2,9 @@
 # TECHSTORE API - HAUPTDATEI
 # ========================================
 
+import os
+import requests
+from fastapi import BackgroundTasks
 from fastapi import FastAPI, HTTPException, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordRequestForm
@@ -15,6 +18,55 @@ from database import Base, engine, SessionLocal, get_db
 import models
 import schemas
 import auth
+
+
+def sende_bestaetigungs_email(empfaenger_email: str, bestellnummer: int, gesamtpreis: float):
+    """Sendet eine Test-Bestätigung über die Brevo API."""
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = os.getenv("SMTP_SENDER")
+
+    if not api_key or not sender_email:
+        print("Brevo-Konfiguration fehlt – E-Mail wird nicht gesendet.")
+        return
+
+    body = f"""
+    Hallo,
+
+    vielen Dank für deine Bestellung bei TechTOHFA!
+
+    ⚠️ WICHTIGER HINWEIS: Dies ist eine TEST-BESTELLUNG! ⚠️
+    Es handelt sich hierbei um ein Portfolio-Projekt. 
+    Es wurde KEIN echter Kauf getätigt und es wird kein Geld abgebucht.
+
+    ---
+    Bestellnummer: #{bestellnummer}
+    Gesamtpreis: {gesamtpreis:.2f} €
+    ---
+
+    Viele Grüße
+    Dein TechTOHFA-Team
+    """
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"email": sender_email, "name": "TechTOHFA"},
+        "to": [{"email": empfaenger_email}],
+        "subject": f"Deine Test-Bestellung bei TechTOHFA (#{bestellnummer})",
+        "textContent": body
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        print(f"Brevo-Status: {response.status_code} – {response.text}")
+    except Exception as e:
+        print(f"Fehler beim E-Mail-Versand: {e}")
+
+
 
 # Die FastAPI-App erstellen
 app = FastAPI(title="TechStore API")
@@ -295,6 +347,7 @@ def delete_warenkorb(
 
 @app.post("/bestellungen", response_model=schemas.BestellungResponse)
 def create_bestellung(
+    background_tasks: BackgroundTasks,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -357,6 +410,12 @@ def create_bestellung(
     
     db.commit()
     db.refresh(neue_bestellung)
+    background_tasks.add_task(
+        sende_bestaetigungs_email,
+        current_user.email,
+        neue_bestellung.id,
+        neue_bestellung.gesamtpreis
+    )
     return neue_bestellung
 
 @app.get("/bestellungen", response_model=List[schemas.BestellungResponse])
