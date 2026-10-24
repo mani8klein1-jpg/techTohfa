@@ -915,8 +915,13 @@ footer {
         top: 15px;
     }
     
-    /* Das alte Mikrofon in der Suchleiste ausblenden */
-    .suchleiste #micBtn {
-        display: none;
+    /* Die ganze Suchleiste auf dem Handy ausblenden */
+    .suchleiste {
+        display: none !important;
+    }
+
+    /* Suchleiste im Hamburger-Menü ausblenden */
+    .header-container nav .suchleiste {
+        display: none !important;
     }
 }
