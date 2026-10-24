@@ -171,6 +171,28 @@ async function sucheProdukte(query) {
 
 // Globale Suchfunktion (funktioniert auf allen Seiten)
 function sucheAusfuehrenGlobal() {
+
+    // Englische Begriffe ins Deutsche übersetzen
+    const uebersetzungen = {
+        "mouse": "maus",
+        "maus": "maus",
+        "keyboard": "tastatur",
+        "tastatur": "tastatur",
+        "laptop": "laptop",
+        "monitor": "monitor",
+        "cable": "kabel",
+        "kabel": "kabel",
+        "headset": "headset",
+        "headphones": "kopfhörer",
+        "usb": "usb"
+    };
+
+    let queryLower = query.toLowerCase();
+    if (uebersetzungen[queryLower]) {
+        query = uebersetzungen[queryLower];
+        input.value = query;
+    }
+
     const input = document.getElementById('suchInput');
     if (!input) return;
     
