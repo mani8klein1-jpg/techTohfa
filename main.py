@@ -16,7 +16,7 @@ from fastapi import Request
 
 from database import Base, engine, SessionLocal, get_db
 import models
-import schemas
+import db_schemas as schemas
 import auth
 
 
@@ -163,8 +163,8 @@ def read_root():
 # BENUTZER - ENDPUNKTE
 # ========================================
 
-@app.post("/registrieren", response_model=schemas.BenutzerResponse)
-def registrieren(benutzer: schemas.BenutzerCreate, db: Session = Depends(get_db)):
+@app.post("/registrieren", response_model=db_schemas.BenutzerResponse)
+def registrieren(benutzer: db_schemas.BenutzerCreate, db: Session = Depends(get_db)):
     """Neuen Benutzer registrieren"""
     existiert = db.query(models.Benutzer).filter(models.Benutzer.email == benutzer.email).first()
     if existiert:
@@ -182,7 +182,7 @@ def registrieren(benutzer: schemas.BenutzerCreate, db: Session = Depends(get_db)
     db.refresh(neuer_benutzer)
     return neuer_benutzer
 
-@app.post("/login", response_model=schemas.Token)
+@app.post("/login", response_model=db_schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     """Benutzer einloggen und Token erhalten"""
     benutzer = db.query(models.Benutzer).filter(models.Benutzer.email == form_data.username).first()
@@ -196,7 +196,7 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = auth.create_access_token(data={"sub": benutzer.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/benutzer/ich", response_model=schemas.BenutzerResponse)
+@app.get("/benutzer/ich", response_model=db_schemas.BenutzerResponse)
 def get_ich(current_user: models.Benutzer = Depends(auth.get_current_user)):
     """Gibt den aktuell eingeloggten Benutzer zurück"""
     return current_user
@@ -205,12 +205,12 @@ def get_ich(current_user: models.Benutzer = Depends(auth.get_current_user)):
 # KATEGORIEN - ENDPUNKTE
 # ========================================
 
-@app.get("/kategorien", response_model=List[schemas.KategorieResponse])
+@app.get("/kategorien", response_model=List[db_schemas.KategorieResponse])
 def get_kategorien(db: Session = Depends(get_db)):
     return db.query(models.Kategorie).all()
 
-@app.post("/kategorien", response_model=schemas.KategorieResponse)
-def create_kategorie(kategorie: schemas.KategorieCreate, db: Session = Depends(get_db)):
+@app.post("/kategorien", response_model=db_schemas.KategorieResponse)
+def create_kategorie(kategorie: db_schemas.KategorieCreate, db: Session = Depends(get_db)):
     neue_kategorie = models.Kategorie(**kategorie.dict())
     db.add(neue_kategorie)
     db.commit()
@@ -243,20 +243,20 @@ def delete_kategorie(
 # PRODUKTE - ENDPUNKTE
 # ========================================
 
-@app.get("/produkte", response_model=List[schemas.ProduktResponse])
+@app.get("/produkte", response_model=List[db_schemas.ProduktResponse])
 def get_produkte(db: Session = Depends(get_db)):
     return db.query(models.Produkt).all()
 
-@app.get("/produkte/{produkt_id}", response_model=schemas.ProduktResponse)
+@app.get("/produkte/{produkt_id}", response_model=db_schemas.ProduktResponse)
 def get_produkt(produkt_id: int, db: Session = Depends(get_db)):
     produkt = db.query(models.Produkt).filter(models.Produkt.id == produkt_id).first()
     if not produkt:
         raise HTTPException(status_code=404, detail="Produkt nicht gefunden")
     return produkt
 
-@app.post("/produkte", response_model=schemas.ProduktResponse)
+@app.post("/produkte", response_model=db_schemas.ProduktResponse)
 def create_produkt(
-    produkt: schemas.ProduktCreate,
+    produkt: db_schemas.ProduktCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -269,10 +269,10 @@ def create_produkt(
     db.refresh(neues_produkt)
     return neues_produkt
 
-@app.put("/produkte/{produkt_id}", response_model=schemas.ProduktResponse)
+@app.put("/produkte/{produkt_id}", response_model=db_schemas.ProduktResponse)
 def update_produkt(
     produkt_id: int,
-    produkt: schemas.ProduktCreate,
+    produkt: db_schemas.ProduktCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -314,9 +314,9 @@ def delete_produkt(
 # WARENKORB - ENDPUNKTE
 # ========================================
 
-@app.post("/warenkorb", response_model=schemas.WarenkorbResponse)
+@app.post("/warenkorb", response_model=db_schemas.WarenkorbResponse)
 def add_warenkorb(
-    eintrag: schemas.WarenkorbCreate,
+    eintrag: db_schemas.WarenkorbCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -345,7 +345,7 @@ def add_warenkorb(
         db.refresh(neuer_eintrag)
         return neuer_eintrag
 
-@app.get("/warenkorb", response_model=List[schemas.WarenkorbResponse])
+@app.get("/warenkorb", response_model=List[db_schemas.WarenkorbResponse])
 def get_warenkorb(
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
@@ -355,7 +355,7 @@ def get_warenkorb(
 @app.put("/warenkorb/{eintrag_id}")
 def update_warenkorb(
     eintrag_id: int,
-    daten: schemas.WarenkorbUpdate,
+    daten: db_schemas.WarenkorbUpdate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -399,9 +399,9 @@ def delete_warenkorb(
 # BESTELLUNGEN - ENDPUNKTE
 # ========================================
 
-@app.post("/bestellungen", response_model=schemas.BestellungResponse)
+@app.post("/bestellungen", response_model=db_schemas.BestellungResponse)
 def create_bestellung(
-    adresse: schemas.BestellungCreate, 
+    adresse: db_schemas.BestellungCreate, 
     background_tasks: BackgroundTasks,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
@@ -490,14 +490,14 @@ def create_bestellung(
     )
     return neue_bestellung
 
-@app.get("/bestellungen", response_model=List[schemas.BestellungResponse])
+@app.get("/bestellungen", response_model=List[db_schemas.BestellungResponse])
 def get_bestellungen(
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
     return db.query(models.Bestellung).filter(models.Bestellung.benutzer_id == current_user.id).all()
 
-@app.get("/bestellungen/{bestellung_id}", response_model=schemas.BestellungResponse)
+@app.get("/bestellungen/{bestellung_id}", response_model=db_schemas.BestellungResponse)
 def get_bestellung(
     bestellung_id: int,
     current_user: models.Benutzer = Depends(auth.get_current_user),
