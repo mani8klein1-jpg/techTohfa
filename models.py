@@ -87,8 +87,7 @@ class Bestellung(Base):
     benutzer_id = Column(Integer, ForeignKey("benutzer.id"))
     gesamtpreis = Column(Float, nullable=False)
     status = Column(String, default="offen")
-    erstellt_am = Column(DateTime, default=datetime.now)
-
+    erstellt_am = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     # Beziehung: Eine Bestellung hat viele Positionen
     positionen = relationship("Bestellposition", back_populates="bestellung")
 
