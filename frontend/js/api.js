@@ -196,26 +196,15 @@ function sucheAusfuehrenGlobal() {
     
     // 2. Englische Begriffe ins Deutsche übersetzen
     const uebersetzungen = {
-        "mouse": "maus",
-        "maus": "mouse",
-        "keyboard": "tastatur",
+       "maus": "mouse",
         "tastatur": "keyboard",
+        "kabel": "cable",
+        "kopfhörer": "headphones",
         "laptop": "laptop",
         "monitor": "monitor",
-        "cable": "kabel",
-        "kabel": "kabel",
-        "headset": "headset",
-        "headphones": "kopfhörer",
         "usb": "usb",
-        "laptop": "notebook",
-        "book": "notebook",
-        "notebook": "buisnessbook",
-        "laptop": "ultrabook",
-        "laptop": "gamingbook",
-        "laptop": "creatorbook",
-        "zubehör": "pocket",
-        "zubehör": "headset",
-        "zubehör": "webcam"
+        "bildschirm": "screen",
+        "festplatte": "ssd"
     };
 
     let queryLower = query.toLowerCase();
