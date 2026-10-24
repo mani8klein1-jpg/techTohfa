@@ -165,8 +165,7 @@ async function sucheProdukte(query) {
     const q = query.toLowerCase().trim();
     
     return alleProdukte.filter(p => 
-        p.name.toLowerCase().includes(q) ||
-        (p.beschreibung && p.beschreibung.toLowerCase().includes(q))
+        p.name.toLowerCase().includes(q)
     );
 }
 
