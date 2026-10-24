@@ -170,26 +170,52 @@ async function sucheProdukte(query) {
 }
 
 // Globale Suchfunktion (funktioniert auf allen Seiten)
+// Globale Suchfunktion (funktioniert auf allen Seiten)
 function sucheAusfuehrenGlobal() {
-    
     const input = document.getElementById('suchInput');
     if (!input) return;
     
-    const query = input.value.trim();
+    let query = input.value.trim();
     
-        // Englische Begriffe ins Deutsche übersetzen
+    // 1. Füllwörter entfernen (z. B. "Zeig mir alle Laptops" → "Laptops")
+    const fuellwoerter = [
+        "zeig mir", "zeige mir", "suche nach", "ich suche", "ich möchte", 
+        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine"
+    ];
+    
+    let bereinigt = query.toLowerCase();
+    fuellwoerter.forEach(wort => {
+        bereinigt = bereinigt.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
+    });
+    bereinigt = bereinigt.trim().replace(/\s+/g, ' ');
+    
+    if (bereinigt.length > 0) {
+        query = bereinigt;
+        input.value = query;
+    }
+    
+    // 2. Englische Begriffe ins Deutsche übersetzen
     const uebersetzungen = {
         "mouse": "maus",
-        "maus": "maus",
+        "maus": "mouse",
         "keyboard": "tastatur",
-        "tastatur": "tastatur",
+        "tastatur": "keyboard",
         "laptop": "laptop",
         "monitor": "monitor",
         "cable": "kabel",
         "kabel": "kabel",
         "headset": "headset",
         "headphones": "kopfhörer",
-        "usb": "usb"
+        "usb": "usb",
+        "laptop": "notebook",
+        "book": "notebook",
+        "notebook": "buisnessbook",
+        "laptop": "ultrabook",
+        "laptop": "gamingbook",
+        "laptop": "creatorbook",
+        "zubehör": "pocket",
+        "zubehör": "headset",
+        "zubehör": "webcam"
     };
 
     let queryLower = query.toLowerCase();
@@ -198,11 +224,10 @@ function sucheAusfuehrenGlobal() {
         input.value = query;
     }
     
-    // Auf index.html → direkt filtern
+    // 3. Suche ausführen
     if (typeof sucheAusfuehren === 'function') {
         sucheAusfuehren();
     } else {
-        // Auf anderen Seiten → zur Startseite
         if (query) {
             window.location.href = `index.html?suche=${encodeURIComponent(query)}`;
         } else {
