@@ -208,12 +208,17 @@ function zeigeDankeSeite() {
     // Warenkorb-Zähler zurücksetzen
     document.getElementById('cartCount').textContent = '0';
     
-    container.innerHTML = `
+        container.innerHTML = `
         <div style="background:white; padding:50px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.08); text-align:center;">
             <h1 style="color:#4caf50; font-size:48px; margin-bottom:20px;">✓</h1>
             <h2 style="margin-bottom:15px;">Vielen Dank für Ihre Bestellung!</h2>
-            <p style="color:#888; margin-bottom:30px;">Ihre Bestellung wurde erfolgreich aufgegeben.</p>
+            <p style="color:#888; margin-bottom:15px;">Ihre Bestellung wurde erfolgreich aufgegeben.</p>
             
+            <!-- NEU: E-Mail-Hinweis -->
+            <p style="color:#4caf50; font-weight:bold; margin-bottom:30px;">
+                📧 Eine Bestätigung wurde an deine E-Mail-Adresse gesendet.
+            </p>
+
             <div style="background:#f9f9f9; padding:25px; border-radius:8px; margin-bottom:30px; text-align:left;">
                 <p style="margin-bottom:10px;"><strong>Bestellnummer:</strong> ${bestellnummer}</p>
                 <p style="margin-bottom:10px;"><strong>Gesamtpreis:</strong> ${bestellpreis} €</p>
