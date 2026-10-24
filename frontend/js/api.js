@@ -273,3 +273,80 @@ function toggleMobileMenu() {
         nav.classList.toggle('open');
     }
 }
+
+// ========================================
+// SPRACHERKENNUNG (Speech-to-Text)
+// ========================================
+
+let recognition = null;
+let isListening = false;
+
+function startSpeech() {
+    // Browser-Support prüfen
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+        alert('Spracherkennung wird in diesem Browser nicht unterstützt. Bitte Chrome oder Edge verwenden.');
+        return;
+    }
+    
+    // Falls schon am Zuhören: stoppen
+    if (isListening) {
+        if (recognition) recognition.stop();
+        return;
+    }
+    
+    // Neue Erkennung starten
+    recognition = new SpeechRecognition();
+    recognition.lang = 'de-DE';           // Deutsch
+    recognition.continuous = false;       // Nach einer Phrase stoppen
+    recognition.interimResults = false;   // Nur Endergebnis
+    
+    const micBtn = document.getElementById('micBtn');
+    const suchInput = document.getElementById('suchInput');
+    
+    recognition.onstart = function() {
+        isListening = true;
+        if (micBtn) {
+            micBtn.classList.add('listening');
+            micBtn.textContent = '🔴';
+        }
+        if (suchInput) suchInput.placeholder = '🎤 Sprich jetzt...';
+    };
+    
+    recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        if (suchInput) suchInput.value = transcript;
+        
+        // Suche direkt ausführen
+        if (typeof sucheAusfuehren === 'function') {
+            sucheAusfuehren();
+        } else if (typeof sucheAusfuehrenGlobal === 'function') {
+            sucheAusfuehrenGlobal();
+        }
+    };
+    
+    recognition.onerror = function(event) {
+        console.error('Spracherkennungs-Fehler:', event.error);
+        if (micBtn) {
+            micBtn.classList.remove('listening');
+            micBtn.textContent = '🎤';
+        }
+        isListening = false;
+        
+        if (event.error === 'not-allowed') {
+            alert('Mikrofon-Zugriff verweigert. Bitte erlauben Sie den Zugriff in den Browser-Einstellungen.');
+        }
+    };
+    
+    recognition.onend = function() {
+        isListening = false;
+        if (micBtn) {
+            micBtn.classList.remove('listening');
+            micBtn.textContent = '🎤';
+        }
+        if (suchInput) suchInput.placeholder = '🔍 Produkte suchen...';
+    };
+    
+    recognition.start();
+}

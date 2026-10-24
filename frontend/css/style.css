@@ -859,3 +859,18 @@ footer {
 .trust-badges ul {
     margin: 0;
 }
+
+
+
+/* Mikrofon-Button */
+#micBtn.listening {
+    animation: pulse 1s infinite;
+    background-color: #4caf50 !important;
+    border-color: #4caf50 !important;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
