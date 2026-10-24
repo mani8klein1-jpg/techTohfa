@@ -903,7 +903,7 @@ footer {
 
 .mic-header-btn:hover {
     background: #c73652;
-    transform: scale(1.1);
+    transform: scale(0.8);
 }
 
 /* Auf dem Handy sichtbar machen */
