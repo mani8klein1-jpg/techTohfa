@@ -502,6 +502,22 @@ def delete_bestellung(
     return {"message": "Bestellung gelöscht"}
 
 
+@app.get("/fix-bestellzeit")
+def fix_bestellzeit():
+    from database import SessionLocal
+    import models
+    from datetime import timezone
+    db = SessionLocal()
+    bestellungen = db.query(models.Bestellung).all()
+    for b in bestellungen:
+        if b.erstellt_am and b.erstellt_am.tzinfo is None:
+            # Falls die Zeit ohne Zeitzone gespeichert wurde, setzen wir sie auf UTC
+            b.erstellt_am = b.erstellt_am.replace(tzinfo=timezone.utc)
+    db.commit()
+    db.close()
+    return {"message": "Bestellzeiten repariert!"}
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
