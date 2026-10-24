@@ -479,10 +479,22 @@ footer {
 }
 
 
-/* Responsive: Suchleiste ausblenden auf kleinen Bildschirmen */
+
+/* Responsive: Suchleiste auf kleinen Bildschirmen anpassen */
 @media (max-width: 900px) {
     .suchleiste {
-        display: none;
+        display: flex;
+        width: 100%;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+    
+    .suchleiste input {
+        flex: 1;
+    }
+    
+    .suchleiste button {
+        white-space: nowrap;
     }
 }
 
