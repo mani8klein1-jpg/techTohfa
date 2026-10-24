@@ -35,7 +35,7 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
         <tr>
             <td style="padding: 10px; border-bottom: 1px solid #eee;">{pos['name']}</td>
             <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: center;">{pos['menge']}</td>
-            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">{pos['preis'] * pos['menge']:.2f} €</td>
+            <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">{str(round(pos['preis'] * pos['menge'], 2)).replace('.', ',')} €</td>
         </tr>
         """
 
@@ -87,7 +87,7 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
                         {positionen_html}
                     </tbody>
                 </table>
-                <div class="total">Gesamt: {gesamtpreis:.2f} €</div>
+                <div class="total">Gesamt: {str(round(gesamtpreis, 2)).replace('.', ',')} €</div>
                 
                 <p style="margin-top: 30px;">Wir wünschen dir viel Freude mit deiner Bestellung!</p>
                 <p>Viele Grüße,<br>Dein TechTOHFA-Team</p>
