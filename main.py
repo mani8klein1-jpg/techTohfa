@@ -29,7 +29,6 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
         print("Brevo-Konfiguration fehlt – E-Mail wird nicht gesendet.")
         return
 
-    # Produktliste als HTML-Tabelle aufbauen
     positionen_html = ""
     for pos in positionen:
         positionen_html += f"""
@@ -111,7 +110,7 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
         "sender": {"email": sender_email, "name": "TechTOHFA"},
         "to": [{"email": empfaenger_email}],
         "subject": f"Deine Bestellung bei TechTOHFA (#{bestellnummer})",
-        "htmlContent": body  # WICHTIG: htmlContent statt textContent!
+        "htmlContent": body
     }
 
     try:
@@ -121,15 +120,12 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
         print(f"Fehler beim E-Mail-Versand: {e}")
 
 
-
-# Die FastAPI-App erstellen
 app = FastAPI(title="TechStore API")
 
-# CORS erlauben
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],              # Erlaubt ALLE Origins
-    allow_credentials=False,          # WICHTIG: Muss False sein bei "*"
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -146,26 +142,14 @@ async def http_exception_handler(request: Request, exc: HTTPException):
         },
     )
 
-# ========================================
-# DATENBANK-TABELLEN ERSTELLEN
-# ========================================
 Base.metadata.create_all(bind=engine)
-
-# ========================================
-# STARTPUNKT
-# ========================================
 
 @app.get("/")
 def read_root():
     return {"message": "TechStore API läuft! 🚀"}
 
-# ========================================
-# BENUTZER - ENDPUNKTE
-# ========================================
-
-@app.post("/registrieren", response_model=db_schemas.BenutzerResponse)
-def registrieren(benutzer: db_schemas.BenutzerCreate, db: Session = Depends(get_db)):
-    """Neuen Benutzer registrieren"""
+@app.post("/registrieren", response_model=schemas.BenutzerResponse)
+def registrieren(benutzer: schemas.BenutzerCreate, db: Session = Depends(get_db)):
     existiert = db.query(models.Benutzer).filter(models.Benutzer.email == benutzer.email).first()
     if existiert:
         raise HTTPException(status_code=400, detail="E-Mail bereits registriert")
@@ -182,9 +166,8 @@ def registrieren(benutzer: db_schemas.BenutzerCreate, db: Session = Depends(get_
     db.refresh(neuer_benutzer)
     return neuer_benutzer
 
-@app.post("/login", response_model=db_schemas.Token)
+@app.post("/login", response_model=schemas.Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
-    """Benutzer einloggen und Token erhalten"""
     benutzer = db.query(models.Benutzer).filter(models.Benutzer.email == form_data.username).first()
     
     if not benutzer:
@@ -196,21 +179,16 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     access_token = auth.create_access_token(data={"sub": benutzer.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.get("/benutzer/ich", response_model=db_schemas.BenutzerResponse)
+@app.get("/benutzer/ich", response_model=schemas.BenutzerResponse)
 def get_ich(current_user: models.Benutzer = Depends(auth.get_current_user)):
-    """Gibt den aktuell eingeloggten Benutzer zurück"""
     return current_user
 
-# ========================================
-# KATEGORIEN - ENDPUNKTE
-# ========================================
-
-@app.get("/kategorien", response_model=List[db_schemas.KategorieResponse])
+@app.get("/kategorien", response_model=List[schemas.KategorieResponse])
 def get_kategorien(db: Session = Depends(get_db)):
     return db.query(models.Kategorie).all()
 
-@app.post("/kategorien", response_model=db_schemas.KategorieResponse)
-def create_kategorie(kategorie: db_schemas.KategorieCreate, db: Session = Depends(get_db)):
+@app.post("/kategorien", response_model=schemas.KategorieResponse)
+def create_kategorie(kategorie: schemas.KategorieCreate, db: Session = Depends(get_db)):
     neue_kategorie = models.Kategorie(**kategorie.dict())
     db.add(neue_kategorie)
     db.commit()
@@ -223,7 +201,6 @@ def delete_kategorie(
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
-    """Kategorie löschen (nur Admin)"""
     if not current_user.ist_admin:
         raise HTTPException(status_code=403, detail="Nur Admins dürfen Kategorien löschen")
     
@@ -239,24 +216,20 @@ def delete_kategorie(
     db.commit()
     return {"message": "Kategorie gelöscht"}
 
-# ========================================
-# PRODUKTE - ENDPUNKTE
-# ========================================
-
-@app.get("/produkte", response_model=List[db_schemas.ProduktResponse])
+@app.get("/produkte", response_model=List[schemas.ProduktResponse])
 def get_produkte(db: Session = Depends(get_db)):
     return db.query(models.Produkt).all()
 
-@app.get("/produkte/{produkt_id}", response_model=db_schemas.ProduktResponse)
+@app.get("/produkte/{produkt_id}", response_model=schemas.ProduktResponse)
 def get_produkt(produkt_id: int, db: Session = Depends(get_db)):
     produkt = db.query(models.Produkt).filter(models.Produkt.id == produkt_id).first()
     if not produkt:
         raise HTTPException(status_code=404, detail="Produkt nicht gefunden")
     return produkt
 
-@app.post("/produkte", response_model=db_schemas.ProduktResponse)
+@app.post("/produkte", response_model=schemas.ProduktResponse)
 def create_produkt(
-    produkt: db_schemas.ProduktCreate,
+    produkt: schemas.ProduktCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -269,10 +242,10 @@ def create_produkt(
     db.refresh(neues_produkt)
     return neues_produkt
 
-@app.put("/produkte/{produkt_id}", response_model=db_schemas.ProduktResponse)
+@app.put("/produkte/{produkt_id}", response_model=schemas.ProduktResponse)
 def update_produkt(
     produkt_id: int,
-    produkt: db_schemas.ProduktCreate,
+    produkt: schemas.ProduktCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -310,13 +283,9 @@ def delete_produkt(
     db.commit()
     return {"message": "Produkt gelöscht"}
 
-# ========================================
-# WARENKORB - ENDPUNKTE
-# ========================================
-
-@app.post("/warenkorb", response_model=db_schemas.WarenkorbResponse)
+@app.post("/warenkorb", response_model=schemas.WarenkorbResponse)
 def add_warenkorb(
-    eintrag: db_schemas.WarenkorbCreate,
+    eintrag: schemas.WarenkorbCreate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -345,7 +314,7 @@ def add_warenkorb(
         db.refresh(neuer_eintrag)
         return neuer_eintrag
 
-@app.get("/warenkorb", response_model=List[db_schemas.WarenkorbResponse])
+@app.get("/warenkorb", response_model=List[schemas.WarenkorbResponse])
 def get_warenkorb(
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
@@ -355,7 +324,7 @@ def get_warenkorb(
 @app.put("/warenkorb/{eintrag_id}")
 def update_warenkorb(
     eintrag_id: int,
-    daten: db_schemas.WarenkorbUpdate,
+    daten: schemas.WarenkorbUpdate,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
@@ -395,13 +364,9 @@ def delete_warenkorb(
     db.commit()
     return {"message": "Produkt aus dem Warenkorb entfernt"}
 
-# ========================================
-# BESTELLUNGEN - ENDPUNKTE
-# ========================================
-
-@app.post("/bestellungen", response_model=db_schemas.BestellungResponse)
+@app.post("/bestellungen", response_model=schemas.BestellungResponse)
 def create_bestellung(
-    adresse: db_schemas.BestellungCreate, 
+    adresse: schemas.BestellungCreate, 
     background_tasks: BackgroundTasks,
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
@@ -436,7 +401,7 @@ def create_bestellung(
             "preis": produkt.preis
         })
     
-        neue_bestellung = models.Bestellung(
+    neue_bestellung = models.Bestellung(
         benutzer_id=current_user.id,
         gesamtpreis=round(gesamtpreis, 2),
         status="offen",
@@ -470,7 +435,8 @@ def create_bestellung(
     
     db.commit()
     db.refresh(neue_bestellung)
-        # Produktnamen für die E-Mail sammeln
+    
+    # Produktnamen für die E-Mail sammeln
     positionen_fuer_email = []
     for pos in positionen:
         produkt = db.query(models.Produkt).filter(models.Produkt.id == pos["produkt_id"]).first()
@@ -480,24 +446,24 @@ def create_bestellung(
             "preis": pos["preis"]
         })
 
-        background_tasks.add_task(
+    background_tasks.add_task(
         sende_bestaetigungs_email,
         current_user.email,
-        f"{adresse.vorname} {adresse.nachname}", # <-- NEU
+        f"{adresse.vorname} {adresse.nachname}",
         neue_bestellung.id,
         neue_bestellung.gesamtpreis,
         positionen_fuer_email
     )
     return neue_bestellung
 
-@app.get("/bestellungen", response_model=List[db_schemas.BestellungResponse])
+@app.get("/bestellungen", response_model=List[schemas.BestellungResponse])
 def get_bestellungen(
     current_user: models.Benutzer = Depends(auth.get_current_user),
     db: Session = Depends(get_db)
 ):
     return db.query(models.Bestellung).filter(models.Bestellung.benutzer_id == current_user.id).all()
 
-@app.get("/bestellungen/{bestellung_id}", response_model=db_schemas.BestellungResponse)
+@app.get("/bestellungen/{bestellung_id}", response_model=schemas.BestellungResponse)
 def get_bestellung(
     bestellung_id: int,
     current_user: models.Benutzer = Depends(auth.get_current_user),
@@ -536,11 +502,6 @@ def delete_bestellung(
     return {"message": "Bestellung gelöscht"}
 
 
-
- 
-
-
-# Die App starten
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
