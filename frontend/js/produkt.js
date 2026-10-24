@@ -30,29 +30,41 @@ async function loadProdukt(id) {
         
                container.innerHTML = `
                 <div class="produkt-detail-wrapper">
-                    <div class="produkt-detail-bild">
-                        <img src="${produkt.bild_url || 'https://via.placeholder.com/500x400'}" 
-                            alt="${produkt.name}">
-                    </div>
-                    <div class="produkt-detail-info">
-                        <h1>${produkt.name}</h1>
-                        <p class="beschreibung">${produkt.beschreibung || ''}</p>
-                        <p class="preis">${produkt.preis.toFixed(2).replace('.', ',')} €</p>
-                        <p class="lager">✓ ${produkt.lagerbestand} auf Lager</p>
-                        
-                        <div class="mengen-selector">
-                            <button class="btn" onclick="changeMenge(-1)">−</button>
-                            <span id="menge">1</span>
-                            <button class="btn" onclick="changeMenge(1)">+</button>
-                        </div>
-                        
-                        <button class="btn btn-primary btn-block" onclick="addToCart(${produkt.id})">
-                            🛒 In den Warenkorb
-                        </button>
-                        
-                        <p id="message" style="margin-top:15px; text-align:center;"></p>
-                    </div>
+                <div class="produkt-detail-bild">
+                    <img src="${produkt.bild_url || 'https://via.placeholder.com/500x400'}" 
+                         alt="${produkt.name}">
                 </div>
+                <div class="produkt-detail-info">
+                    <h1>${produkt.name}</h1>
+                    <p class="beschreibung">${produkt.beschreibung || ''}</p>
+                    <p class="preis">${produkt.preis.toFixed(2).replace('.', ',')} €</p>
+                    <p class="lager">✓ ${produkt.lagerbestand} auf Lager</p>
+                    
+                    <!-- NEU: Trust Badges -->
+                    <div class="trust-badges">
+                        <p style="color: #2e7d32; font-weight: bold; font-size: 18px; margin-bottom: 10px;">
+                            🚀 Sofort-Kaufen
+                        </p>
+                        <ul style="list-style: none; padding: 0; color: #555; font-size: 14px; line-height: 1.8;">
+                            <li>📦 Gratis 2-3 Tage Lieferung</li>
+                            <li>🔄 Kostenloser Rückversand</li>
+                            <li>⭐ 7.483 verkauft</li>
+                        </ul>
+                    </div>
+
+                    <div class="mengen-selector" style="margin-top: 20px;">
+                        <button class="btn" onclick="changeMenge(-1)">−</button>
+                        <span id="menge">1</span>
+                        <button class="btn" onclick="changeMenge(1)">+</button>
+                    </div>
+                    
+                    <button class="btn btn-primary btn-block" onclick="addToCart(${produkt.id})">
+                        🛒 In den Warenkorb
+                    </button>
+                    
+                    <p id="message" style="margin-top:15px; text-align:center;"></p>
+                </div>
+            </div>
               `;
         
     } catch (error) {
