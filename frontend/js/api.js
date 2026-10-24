@@ -171,8 +171,13 @@ async function sucheProdukte(query) {
 
 // Globale Suchfunktion (funktioniert auf allen Seiten)
 function sucheAusfuehrenGlobal() {
-
-    // Englische Begriffe ins Deutsche übersetzen
+    
+    const input = document.getElementById('suchInput');
+    if (!input) return;
+    
+    const query = input.value.trim();
+    
+        // Englische Begriffe ins Deutsche übersetzen
     const uebersetzungen = {
         "mouse": "maus",
         "maus": "maus",
@@ -192,11 +197,6 @@ function sucheAusfuehrenGlobal() {
         query = uebersetzungen[queryLower];
         input.value = query;
     }
-
-    const input = document.getElementById('suchInput');
-    if (!input) return;
-    
-    const query = input.value.trim();
     
     // Auf index.html → direkt filtern
     if (typeof sucheAusfuehren === 'function') {
