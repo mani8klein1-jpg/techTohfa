@@ -91,7 +91,7 @@ function zeigeProdukteAdmin() {
                     <h3>${produkt.name}</h3>
                     <p class="admin-produkt-beschreibung">${produkt.beschreibung || ''}</p>
                     <p class="admin-produkt-details">
-                        <strong>${produkt.preis.toFixed(2)} €</strong>
+                        <strong>${produkt.preis.toFixed(2).replace('.', ',')} €</strong>
                         · ${produkt.lagerbestand} auf Lager
                         · ${kategorieName}
                     </p>
