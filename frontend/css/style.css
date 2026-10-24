@@ -882,3 +882,41 @@ footer {
     50% { opacity: 0.5; }
     100% { opacity: 1; }
 }
+
+
+/* ========================================
+   MIKROFON-BUTTON IM HEADER
+   ======================================== */
+
+.mic-header-btn {
+    display: none; /* Standardmäßig versteckt (Desktop) */
+    background: #e94560;
+    border: 2px solid #e94560;
+    color: white;
+    font-size: 20px;
+    padding: 8px 12px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    margin-left: 10px;
+}
+
+.mic-header-btn:hover {
+    background: #c73652;
+    transform: scale(1.1);
+}
+
+/* Auf dem Handy sichtbar machen */
+@media (max-width: 768px) {
+    .mic-header-btn {
+        display: block;
+        position: absolute;
+        right: 15px;
+        top: 15px;
+    }
+    
+    /* Das alte Mikrofon in der Suchleiste ausblenden */
+    .suchleiste #micBtn {
+        display: none;
+    }
+}
