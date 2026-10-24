@@ -364,7 +364,7 @@ def delete_warenkorb(
     db.commit()
     return {"message": "Produkt aus dem Warenkorb entfernt"}
 
-@app.post("/bestellungen")
+@app.post("/bestellungen", response_model=schemas.BestellungResponse)
 def create_bestellung(
     adresse: schemas.BestellungCreate, 
     background_tasks: BackgroundTasks,
