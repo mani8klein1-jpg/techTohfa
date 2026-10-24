@@ -538,11 +538,7 @@ footer {
         gap: 10px;
     }
 
-    /* Suchleiste ausblenden */
-    .suchleiste {
-        display: none;
-    }
-
+    
     /* Navigation in einer Reihe */
     .header-container nav ul {
         display: flex;
