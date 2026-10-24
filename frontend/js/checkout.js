@@ -178,6 +178,15 @@ async function bestellen() {
 
         const bestellung = await response.json();
         
+        // Bestelldaten in sessionStorage speichern
+        sessionStorage.setItem('bestellungErfolgt', 'true');
+        sessionStorage.setItem('bestellnummer', bestellung.id);
+        sessionStorage.setItem('bestellpreis', bestellung.gesamtpreis.toFixed(2));
+        sessionStorage.setItem('lieferadresse', `${vorname} ${nachname}, ${adresse}, ${plz} ${ort}`);
+        
+        // Seite neu laden → zeigt Danke-Seite
+        window.location.reload();
+        
     } catch (error) {
         message.textContent = '✗ Fehler beim Bestellen.';
         message.style.color = '#e94560';
