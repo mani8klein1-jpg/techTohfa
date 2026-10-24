@@ -50,7 +50,7 @@ async function loadWarenkorb() {
                 style="width:80px; height:80px; object-fit:cover; border-radius:6px; background:#f9f9f9;">
             <div class="warenkorb-item-info">
                 <h3>${produkt.name}</h3>
-                <p class="preis">${produkt.preis.toFixed(2)} € × ${eintrag.menge} = ${zwischensumme.toFixed(2)} €</p>
+                <p class="preis">${produkt.preis.toFixed(2).replace('.', ',')} € × ${eintrag.menge} = ${zwischensumme.toFixed(2).replace('.', ',')} €</p>
             </div>
         </div>
         <div style="display:flex; align-items:center; gap:15px;">
@@ -72,7 +72,7 @@ async function loadWarenkorb() {
         
         html += `
             <div class="warenkorb-summe">
-                <h2>Gesamt: <span class="gesamt">${gesamtpreis.toFixed(2)} €</span></h2>
+                <h2>Gesamt: <span class="gesamt">${gesamtpreis.toFixed(2).replace('.', ',')} €</span></h2>
                 <button class="btn btn-primary" onclick="checkout()" style="margin-top:15px;">
                     Zur Kasse
                 </button>

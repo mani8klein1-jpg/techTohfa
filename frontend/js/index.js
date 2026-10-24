@@ -104,7 +104,7 @@ function zeigeProdukte(produkte) {
             <div class="produkt-info">
                 <h3>${produkt.name}</h3>
                 <p class="beschreibung">${produkt.beschreibung || ''}</p>
-                <p class="preis">${produkt.preis.toFixed(2)} €</p>
+                <p class="preis">${produkt.preis.toFixed(2).replace('.', ',')} €</p>
                 <p class="lager">✓ ${produkt.lagerbestand} auf Lager</p>
             </div>
         `;

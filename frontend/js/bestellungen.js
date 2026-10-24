@@ -69,7 +69,7 @@ html += `
             </div>
             <div style="display:flex; align-items:center; gap:20px;">
                 <p style="font-size:24px; font-weight:700; color:#e94560; margin:0;">
-                    ${bestellung.gesamtpreis.toFixed(2)} €
+                    ${bestellung.gesamtpreis.toFixed(2).replace('.', ',')} €
                 </p>
                 <button class="btn" onclick="loescheBestellung(${bestellung.id})" 
                         style="background:#e94560; padding:8px 14px; font-size:13px;">
@@ -131,7 +131,7 @@ async function loadPositionen(bestellungen) {
                 positionenHtml += `
                     <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:14px; border-bottom:1px solid #f5f5f5;">
                         <span>${name} × ${pos.menge}</span>
-                        <span style="font-weight:700;">${zwischensumme.toFixed(2)} €</span>
+                        <span style="font-weight:700;">${zwischensumme.toFixed(2).replace('.', ',')} €</span>
                     </div>
                 `;
             }

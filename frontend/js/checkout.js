@@ -59,7 +59,7 @@ async function loadCheckout() {
             html += `
                 <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0f0f0;">
                     <span>${produkt.name} × ${eintrag.menge}</span>
-                    <span style="font-weight:700;">${zwischensumme.toFixed(2)} €</span>
+                    <span style="font-weight:700;">${zwischensumme.toFixed(2).replace('.', ',')} €</span>
                 </div>
             `;
         }
@@ -67,7 +67,7 @@ async function loadCheckout() {
         html += `
             <div style="display:flex; justify-content:space-between; padding:20px 0; margin-top:15px; border-top:2px solid #1a1a1a; font-size:22px; font-weight:700;">
                 <span>Gesamt:</span>
-                <span style="color:#e94560;">${gesamtpreis.toFixed(2)} €</span>
+                <span style="color:#e94560;">${gesamtpreis.toFixed(2).replace('.', ',')} €</span>
             </div>
         `;
         
@@ -181,7 +181,7 @@ async function bestellen() {
         // Bestelldaten in sessionStorage speichern
         sessionStorage.setItem('bestellungErfolgt', 'true');
         sessionStorage.setItem('bestellnummer', bestellung.id);
-        sessionStorage.setItem('bestellpreis', bestellung.gesamtpreis.toFixed(2));
+        sessionStorage.setItem('bestellpreis', bestellung.gesamtpreis.toFixed(2).replace('.', ','));
         sessionStorage.setItem('lieferadresse', `${vorname} ${nachname}, ${adresse}, ${plz} ${ort}`);
         
         // Seite neu laden → zeigt Danke-Seite

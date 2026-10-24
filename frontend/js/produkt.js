@@ -37,7 +37,7 @@ async function loadProdukt(id) {
                     <div class="produkt-detail-info">
                         <h1>${produkt.name}</h1>
                         <p class="beschreibung">${produkt.beschreibung || ''}</p>
-                        <p class="preis">${produkt.preis.toFixed(2)} €</p>
+                        <p class="preis">${produkt.preis.toFixed(2).replace('.', ',')} €</p>
                         <p class="lager">✓ ${produkt.lagerbestand} auf Lager</p>
                         
                         <div class="mengen-selector">
