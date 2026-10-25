@@ -26,9 +26,10 @@
                         <!-- Schließen-Button: Ganz oben links im Menü -->
             <button class="close-menu-btn" onclick="toggleMobileMenu()">✕</button>
                 <div class="suchleiste">
-                    <input type="text" id="suchInput" placeholder="🔍 Produkte suchen..." autocomplete="off">
-                    <button type="button" id="micBtn" onclick="startSpeech()" title="Spracheingabe" style="background:#e94560; border-color:#e94560; padding: 10px 14px; font-size: 16px;">🎤</button>
-                    <button onclick="sucheAusfuehrenGlobal()">Suchen</button>
+                    <div class="suchleiste">
+                        <input type="text" id="suchInput" placeholder="🔍 Produkte suchen..." autocomplete="off">
+                        <button onclick="sucheAusfuehrenGlobal()">Suchen</button>
+                    </div>
                 </div>
                 <ul>
                     <li><a href="index.html">🏠 Produkte</a></li>
