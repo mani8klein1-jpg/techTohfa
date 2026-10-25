@@ -901,9 +901,22 @@ footer {
     margin-left: 10px;
 }
 
+.mic-header-btn {
+    background: transparent;
+    color: #333;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.2s;
+}
+
 .mic-header-btn:hover {
-    background: #7f7e7f;
-    transform: scale(0.8);
+    color: #e94560;
+}
+
+.mic-header-btn:focus {
+    outline: none;
 }
 
 /* Auf dem Handy sichtbar machen */
