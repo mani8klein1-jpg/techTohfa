@@ -214,11 +214,19 @@ async function sucheAusfuehren() {
     
     // 1. PREIS-FILTER ERKENNEN (z.B. "unter 500", "bis 300 euro", "max 1000")
     let preisFilter = null;
-    const preisRegex = /(?:unter|bis|max|maximal|höchstens)\s*(\d+)/i;
+    const preisRegex = /(unter|bis|max|maximal|höchstens|über|ab|mindestens|von)\s*(\d+)/i;
     const preisMatch = query.match(preisRegex);
     
-    if (preisMatch) {
-        preisFilter = parseInt(preisMatch[1]);
+        if (preisMatch) {
+        preisFilter = parseInt(preisMatch[2]); // Wichtig: [2] statt [1], weil jetzt das Wort in Gruppe 1 und die Zahl in Gruppe 2 steht
+        
+        // Prüfen, ob es "über", "ab" oder "mindestens" ist
+        if (/^(über|ab|mindestens|von)$/i.test(preisMatch[1])) {
+            preisModus = 'über';
+        } else {
+            preisModus = 'bis';
+        }
+
         query = query.replace(preisMatch[0], '').replace(/euro|€/gi, '').trim();
     }
 
@@ -423,7 +431,8 @@ const fuellwoerter = [
     } else {
         ergebnisse = alleProdukte.filter(p => {
             const passtName = p.name.toLowerCase().includes(query);
-            const passtPreis = preisFilter === null || p.preis <= preisFilter;
+            const passtPreis = preisFilter === null || 
+            (preisModus === 'über' ? p.preis >= preisFilter : p.preis <= preisFilter);
             return passtName && passtPreis;
         });
     }
