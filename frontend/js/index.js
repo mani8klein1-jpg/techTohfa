@@ -211,6 +211,40 @@ async function sucheAusfuehren() {
     if (!input) return;
     
     let query = input.value.trim().toLowerCase();
+
+    // ========================================
+    // NAVIGATIONS-BEFEHLE (Intents)
+    // ========================================
+    const navigationsBefehle = [
+        { woerter: ["anmelden", "einloggen", "login", "konto"], ziel: "login.html" },
+        { woerter: ["registrieren", "anlegen", "neues konto"], ziel: "login.html" },
+        { woerter: ["warenkorb", "korb", "einkaufswagen"], ziel: "warenkorb.html" },
+        { woerter: ["kasse", "bezahlen", "checkout", "bestellen"], ziel: "checkout.html" },
+        { woerter: ["bestellungen", "meine bestellung", "bestellübersicht"], ziel: "bestellungen.html" },
+        { woerter: ["profil", "mein konto", "meine daten"], ziel: "profil.html" },
+        { woerter: ["admin", "verwaltung", "produkte anlegen"], ziel: "admin.html" }
+    ];
+
+    for (const befehl of navigationsBefehle) {
+        // Prüfen, ob eines der Wörter im Satz vorkommt
+        if (befehl.woerter.some(wort => query.includes(wort))) {
+            // Nur weiterleiten, wenn es kein Produkt mit diesem Namen gibt
+            const produktExistiert = alleProdukte.some(p => 
+                p.name.toLowerCase().includes(query)
+            );
+            
+            if (!produktExistiert) {
+                // Wenn schon eingeloggt und Ziel "login.html" → zum Profil
+                if (befehl.ziel === "login.html" && isLoggedIn()) {
+                    window.location.href = "profil.html";
+                } else {
+                    window.location.href = befehl.ziel;
+                }
+                return; // Wichtig: Funktion beenden
+            }
+
+        }
+    }
     
     // 1. PREIS-FILTER ERKENNEN (z.B. "unter 500", "bis 300 euro", "max 1000")
     let preisFilter = null;
