@@ -206,357 +206,74 @@ async function updateCartCount() {
 // SUCHE
 // ========================================
 
-
 async function sucheAusfuehren() {
     const input = document.getElementById('suchInput');
     if (!input) return;
-
-    // ========================================
-    // 1. SUCHTEXT VORBEREITEN
-    // ========================================
-    let query = input.value
-        .toLowerCase()
-        .trim()
-        .replace(/[?!,;:]+/g, ' ')
-        .replace(/\s+/g, ' ');
-
-    const originalQuery = query;
-
-    // ========================================
-    // 2. PREISFILTER ERKENNEN
-    // Beispiele:
-    // unter 500 Euro
-    // bis 300 €
-    // maximal 1000
-    // nicht mehr als 200 Euro
-    // ========================================
+    
+    let query = input.value.trim().toLowerCase();
+    
+    // 1. PREIS-FILTER ERKENNEN (z.B. "unter 500", "bis 300 euro", "max 1000")
     let preisFilter = null;
-    let preisModus = 'bis';
-
-    const preisRegex =
-        /\b(nicht mehr als|weniger als|unter|bis zu|maximal|max|höchstens|höchstens bis zu|bis)\s*(\d+(?:[.,]\d{1,2})?)\s*(?:euro|eur|€)?\b/i;
-
+    const preisRegex = /(?:unter|bis|max|maximal|höchstens)\s*(\d+)/i;
     const preisMatch = query.match(preisRegex);
-
+    
     if (preisMatch) {
-        preisFilter = parseFloat(preisMatch[2].replace(',', '.'));
-
-        preisModus =
-            /^(unter|weniger als)$/i.test(preisMatch[1])
-                ? 'unter'
-                : 'bis';
-
-        query = query.replace(preisMatch[0], ' ');
+        preisFilter = parseInt(preisMatch[1]);
+        query = query.replace(preisMatch[0], '').replace(/euro|€/gi, '').trim();
     }
 
-    // ========================================
-    // 3. GANZE PHRASES ENTFERNEN
-    // Längere Phrasen zuerst!
-    // ========================================
+    // 2. FÜLLWÖRTER UND GANZE PHRASEN ENTFERNEN
     const fuellwoerter = [
-        // Ich suche ...
-        'ich bin auf der suche nach',
-        'ich bin auf der suche',
-        'ich suche nach einer',
-        'ich suche nach einem',
-        'ich suche nach einer',
-        'ich suche nach einem',
-        'ich suche nach',
-        'ich suche eine',
-        'ich suche einen',
-        'ich suche ein',
-        'ich suche',
-
-        // Ich möchte ...
-        'ich möchte gerne eine',
-        'ich möchte gerne einen',
-        'ich möchte gerne ein',
-        'ich möchte gerne',
-        'ich möchte gern',
-        'ich möchte eine',
-        'ich möchte einen',
-        'ich möchte ein',
-        'ich möchte',
-
-        // Ich brauche ...
-        'ich benötige eine',
-        'ich benötige einen',
-        'ich benötige ein',
-        'ich benötige',
-        'ich brauche eine',
-        'ich brauche einen',
-        'ich brauche ein',
-        'ich brauche',
-
-        // Zeigen und Suchen
-        'kannst du mir bitte zeigen',
-        'kannst du mir zeigen',
-        'kannst du mir bitte',
-        'kannst du mir',
-        'können sie mir bitte zeigen',
-        'können sie mir zeigen',
-        'können sie mir bitte',
-        'können sie mir',
-        'würdest du mir bitte zeigen',
-        'würdest du mir zeigen',
-        'zeige mir bitte eine',
-        'zeige mir bitte einen',
-        'zeige mir bitte ein',
-        'zeige mir bitte',
-        'zeig mir bitte eine',
-        'zeig mir bitte einen',
-        'zeig mir bitte ein',
-        'zeig mir bitte',
-        'zeige mir eine',
-        'zeige mir einen',
-        'zeige mir ein',
-        'zeige mir',
-        'zeig mir eine',
-        'zeig mir einen',
-        'zeig mir ein',
-        'zeig mir',
-        'suche nach einer',
-        'suche nach einem',
-        'suche nach',
-        'suche bitte',
-        'suche',
-
-        // Fragen zum Angebot
-        'was kannst du mir anbieten',
-        'was können sie mir anbieten',
-        'was habt ihr im angebot',
-        'was haben sie im angebot',
-        'was bietet ihr an',
-        'was bieten sie an',
-        'welche produkte gibt es',
-        'welche produkte habt ihr',
-        'welche produkte haben sie',
-        'was kann ich kaufen',
-        'was gibt es',
-        'was habt ihr',
-        'was haben sie',
-        'hast du eine',
-        'hast du einen',
-        'hast du ein',
-        'hast du',
-        'habt ihr',
-        'haben sie',
-        'gibt es',
-
-        // Preisfragen
-        'wie viel kostet mich',
-        'wie viel kostet denn',
-        'wie viel kostet',
-        'wieviel kostet',
-        'was kostet mich',
-        'was kostet denn',
-        'was kostet',
-        'wie viel kosten',
-        'wieviel kosten',
-        'was kosten',
-        'wie teuer ist',
-        'wie teuer sind',
-        'nenne mir den preis',
-        'nenn mir den preis',
-        'zeige mir den preis',
-        'preis von',
-        'preis für',
-
-        // Verfügbarkeit
-        'ist das produkt verfügbar',
-        'ist das noch verfügbar',
-        'ist noch verfügbar',
-        'sind noch verfügbar',
-        'habt ihr noch',
-        'haben sie noch',
-        'auf lager',
-        'sofort lieferbar',
-        'ist verfügbar',
-        'sind verfügbar',
-
-        // Produktinformationen
-        'was ist der unterschied zwischen',
-        'was ist der unterschied',
-        'was sind die unterschiede',
-        'welche eigenschaften hat',
-        'welche funktionen hat',
-        'technische daten von',
-        'mehr informationen über',
-        'informationen zu',
-        'details zu',
-        'beschreibe mir',
-        'erkläre mir',
-        'wie funktioniert',
-        'wie gut ist',
-        'wie groß ist',
-        'wie schwer ist',
-        'wie schnell ist',
-        'wie viel speicher hat',
-        'wie viel ram hat',
-
-        // Allgemeine Formulierungen
-        'ich hätte gerne eine',
-        'ich hätte gerne einen',
-        'ich hätte gerne ein',
-        'ich hätte gerne',
-        'ich hätte gern',
-        'ich würde gerne',
-        'ich würde gern',
-        'ich will eine',
-        'ich will einen',
-        'ich will ein',
-        'ich will',
-        'ich suche mir',
-        'für mich',
-        'wenn möglich',
-        'wenn es geht',
-        'bitte zeige',
-        'bitte zeig',
-        'bitte suche',
-        'bitte finde',
-        'bitte einmal',
-        'einmal bitte'
+        "ich suche eine", "ich suche einen", "ich suche ein", "ich suche",
+        "ich möchte eine", "ich möchte einen", "ich möchte ein", "ich möchte",
+        "zeig mir eine", "zeig mir einen", "zeig mir ein", "zeig mir",
+        "zeige mir eine", "zeige mir einen", "zeige mir ein", "zeige mir",
+        "suche nach einer", "suche nach einem", "suche nach einer", "suche nach",
+        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine", "einen", "einer", "einem"
     ];
+    
+    fuellwoerter.sort((a, b) => b.length - a.length).forEach(wort => {
+        query = query.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
+    });
+    query = query.trim().replace(/\s+/g, ' ');
 
-    // Längere Phrasen immer zuerst entfernen
-    fuellwoerter.sort((a, b) => b.length - a.length);
+    // 3. SYNONYME ERKENNEN (Maus, Mouse, Mäuse, Mice)
+    const synonyme = {
+        "maus": "mouse", "mäuse": "mouse", "mice": "mouse",
+        "tastatur": "keyboard", "tastaturen": "keyboard",
+        "kabel": "cable", "kabeln": "cable",
+        "kopfhörer": "headphones", "kopfhörern": "headphones",
+        "laptop": "laptop", "laptops": "laptop",
+        "monitor": "monitor", "monitore": "monitor", "bildschirm": "screen", "bildschirme": "screen",
+        "usb": "usb", "festplatte": "ssd", "festplatten": "ssd"
+    };
 
-    for (const wort of fuellwoerter) {
-        const escaped = wort.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-        query = query.replace(
-            new RegExp('(^|\\s)' + escaped + '(?=\\s|$)', 'gi'),
-            ' '
-        );
+    if (synonyme[query]) {
+        query = synonyme[query];
     }
+    
+    input.value = query;
 
-    // ========================================
-    // 4. EINZELNE FRAGE- UND FÜLLWÖRTER
-    // ========================================
-    const einzelneFuellwoerter = [
-        'bitte', 'danke', 'dankeschön',
-        'entschuldigung', 'entschuldige',
-        'mal', 'doch', 'denn', 'also',
-        'äh', 'ähm', 'hm', 'hmm',
-        'naja', 'halt', 'eben', 'eigentlich',
-        'vielleicht', 'sozusagen', 'irgendwie',
-        'einfach', 'wirklich', 'gerade',
-        'jetzt', 'einmal', 'gerne', 'gern',
-        'ich', 'mir', 'mich', 'du',
-        'kannst', 'könntest', 'können',
-        'würdest', 'würden', 'möchte',
-        'möchtest', 'will', 'wollte',
-        'was', 'welche', 'welcher', 'welches',
-        'warum', 'wo', 'wann', 'wer',
-        'wie', 'hast', 'habt', 'haben',
-        'hat', 'ist', 'sind', 'wäre',
-        'wären', 'gibt', 'bitte',
-        'der', 'die', 'das', 'den',
-        'dem', 'des', 'ein', 'eine',
-        'einen', 'einem', 'einer', 'eines',
-        'und', 'oder'
-    ];
-
-    const einzelRegex = new RegExp(
-        '\\b(?:' +
-        einzelneFuellwoerter
-            .sort((a, b) => b.length - a.length)
-            .map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-            .join('|') +
-        ')\\b',
-        'gi'
-    );
-
-    query = query
-        .replace(einzelRegex, ' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-    // ========================================
-    // 5. SYNONYME UND PRODUKTBEZEICHNUNGEN
-    // ========================================
-    const synonymGruppen = [
-        ['maus', 'mäuse', 'mouse', 'mice'],
-        ['tastatur', 'tastaturen', 'keyboard', 'keyboards'],
-        ['monitor', 'monitore', 'bildschirm', 'bildschirme', 'screen', 'screens'],
-        ['laptop', 'laptops', 'notebook', 'notebooks'],
-        ['kabel', 'kabeln', 'cable', 'cables'],
-        ['kopfhörer', 'kopfhörern', 'headphone', 'headphones'],
-        ['festplatte', 'festplatten', 'ssd'],
-        ['zubehör', 'accessory', 'accessories']
-    ];
-
-    const synonymMap = {};
-
-    for (const gruppe of synonymGruppen) {
-        for (const wort of gruppe) {
-            synonymMap[wort] = gruppe;
-        }
-    }
-
-    // Schreibvarianten vereinheitlichen
-    query = query
-        .replace(/\bmäuse\b/g, 'maus')
-        .replace(/\bmonitore\b/g, 'monitor')
-        .replace(/\bbildschirme\b/g, 'bildschirm')
-        .replace(/\btastaturen\b/g, 'tastatur')
-        .replace(/\blaptops\b/g, 'laptop')
-        .replace(/\bkabeln\b/g, 'kabel')
-        .replace(/\bkopfhörern\b/g, 'kopfhörer')
-        .replace(/\bfestplatten\b/g, 'festplatte');
-
-    // ========================================
-    // 6. PRODUKTE FILTERN
-    // Suche in Name und Beschreibung
-    // ========================================
-    const suchWoerter = query
-        .split(/\s+/)
-        .filter(Boolean);
-
-    let ergebnisse = alleProdukte.filter(produkt => {
-        const name = (produkt.name || '').toLowerCase();
-        const beschreibung = (produkt.beschreibung || '').toLowerCase();
-
-        const text = `${name} ${beschreibung}`;
-
-        // Jedes Suchwort muss passen.
-        const passtText = suchWoerter.every(wort => {
-            const varianten = synonymMap[wort] || [wort];
-
-            return varianten.some(variante =>
-                text.includes(variante)
-            );
+    // 4. PRODUKTE FILTERN
+    let ergebnisse;
+    if (query === '') {
+        ergebnisse = alleProdukte;
+    } else {
+        ergebnisse = alleProdukte.filter(p => {
+            const passtName = p.name.toLowerCase().includes(query);
+            const passtPreis = preisFilter === null || p.preis <= preisFilter;
+            return passtName && passtPreis;
         });
+    }
 
-        const passtPreis =
-            preisFilter === null ||
-            (preisModus === 'unter'
-                ? produkt.preis < preisFilter
-                : produkt.preis <= preisFilter);
-
-        return passtText && passtPreis;
-    });
-
-    // ========================================
-    // 7. ERGEBNISSE ANZEIGEN
-    // ========================================
+    // 5. ERGEBNISSE ANZEIGEN
     zeigeProdukte(ergebnisse);
-
-    // Kategorie-Filter zurücksetzen
-    aktiveKategorie = null;
-
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-
+    
+    // Filter-Buttons zurücksetzen
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     const alleBtn = document.querySelector('.filter-btn');
     if (alleBtn) alleBtn.classList.add('active');
-
-    // Ursprüngliche Eingabe nicht überschreiben
-    // So bleibt die gesprochene Frage sichtbar.
-    input.value = originalQuery;
 }
-
 
 // Enter-Taste in der Suchleiste
 document.addEventListener('DOMContentLoaded', function() {
