@@ -210,24 +210,69 @@ async function sucheAusfuehren() {
     const input = document.getElementById('suchInput');
     if (!input) return;
     
-    const query = input.value.trim();
+    let query = input.value.trim().toLowerCase();
     
-    // 1. WICHTIG: Filter IMMER zurücksetzen, egal ob gesucht wird oder nicht
-    aktiveKategorie = null;
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    const alleBtn = document.querySelector('.filter-btn');
-    if (alleBtn) alleBtn.classList.add('active');
+    // 1. PREIS-FILTER ERKENNEN (z.B. "unter 500", "bis 300 euro", "max 1000")
+    let preisFilter = null;
+    const preisRegex = /(?:unter|bis|max|maximal|höchstens)\s*(\d+)/i;
+    const preisMatch = query.match(preisRegex);
+    
+    if (preisMatch) {
+        preisFilter = parseInt(preisMatch[1]);
+        query = query.replace(preisMatch[0], '').replace(/euro|€/gi, '').trim();
+    }
 
-    if (query === '') {
-        zeigeProdukte(alleProdukte);
-        return;
+    // 2. FÜLLWÖRTER UND GANZE PHRASEN ENTFERNEN
+    const fuellwoerter = [
+        "ich suche eine", "ich suche einen", "ich suche ein", "ich suche",
+        "ich möchte eine", "ich möchte einen", "ich möchte ein", "ich möchte",
+        "zeig mir eine", "zeig mir einen", "zeig mir ein", "zeig mir",
+        "zeige mir eine", "zeige mir einen", "zeige mir ein", "zeige mir",
+        "suche nach einer", "suche nach einem", "suche nach einer", "suche nach",
+        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine", "einen", "einer", "einem"
+    ];
+    
+    fuellwoerter.sort((a, b) => b.length - a.length).forEach(wort => {
+        query = query.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
+    });
+    query = query.trim().replace(/\s+/g, ' ');
+
+    // 3. SYNONYME ERKENNEN (Maus, Mouse, Mäuse, Mice)
+    const synonyme = {
+        "maus": "mouse", "mäuse": "mouse", "mice": "mouse",
+        "tastatur": "keyboard", "tastaturen": "keyboard",
+        "kabel": "cable", "kabeln": "cable",
+        "kopfhörer": "headphones", "kopfhörern": "headphones",
+        "laptop": "laptop", "laptops": "laptop",
+        "monitor": "monitor", "monitore": "monitor", "bildschirm": "screen", "bildschirme": "screen",
+        "usb": "usb", "festplatte": "ssd", "festplatten": "ssd"
+    };
+
+    if (synonyme[query]) {
+        query = synonyme[query];
     }
     
-    // 2. Suchen und anzeigen
-    const ergebnisse = await sucheProdukte(query);
+    input.value = query;
+
+    // 4. PRODUKTE FILTERN
+    let ergebnisse;
+    if (query === '') {
+        ergebnisse = alleProdukte;
+    } else {
+        ergebnisse = alleProdukte.filter(p => {
+            const passtName = p.name.toLowerCase().includes(query);
+            const passtPreis = preisFilter === null || p.preis <= preisFilter;
+            return passtName && passtPreis;
+        });
+    }
+
+    // 5. ERGEBNISSE ANZEIGEN
     zeigeProdukte(ergebnisse);
+    
+    // Filter-Buttons zurücksetzen
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    const alleBtn = document.querySelector('.filter-btn');
+    if (alleBtn) alleBtn.classList.add('active');
 }
 
 // Enter-Taste in der Suchleiste
