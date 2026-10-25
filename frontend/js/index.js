@@ -223,14 +223,176 @@ async function sucheAusfuehren() {
     }
 
     // 2. FÜLLWÖRTER UND GANZE PHRASEN ENTFERNEN
-    const fuellwoerter = [
-        "ich suche eine", "ich suche einen", "ich suche ein", "ich suche",
-        "ich möchte eine", "ich möchte einen", "ich möchte ein", "ich möchte",
-        "zeig mir eine", "zeig mir einen", "zeig mir ein", "zeig mir",
-        "zeige mir eine", "zeige mir einen", "zeige mir ein", "zeige mir",
-        "suche nach einer", "suche nach einem", "suche nach einer", "suche nach",
-        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine", "einen", "einer", "einem"
-    ];
+    
+const fuellwoerter = [
+    // ========================================
+    // 1. ICH SUCHE ...
+    // ========================================
+    "ich suche eine", "ich suche einen", "ich suche ein",
+    "ich suche", "ich bin auf der suche nach",
+    "ich suche nach einer", "ich suche nach einem",
+    "ich suche nach einem", "ich suche nach",
+    "ich brauche eine", "ich brauche einen",
+    "ich brauche ein", "ich brauche",
+    "ich benötige eine", "ich benötige einen",
+    "ich benötige ein", "ich benötige",
+    "ich hätte gerne eine", "ich hätte gerne einen",
+    "ich hätte gerne ein", "ich hätte gerne",
+    "ich möchte eine", "ich möchte einen",
+    "ich möchte ein", "ich möchte",
+    "ich will eine", "ich will einen",
+    "ich will ein", "ich will",
+
+    // ========================================
+    // 2. ZEIGEN UND ANZEIGEN
+    // ========================================
+    "zeig mir bitte eine", "zeig mir bitte einen",
+    "zeig mir bitte ein", "zeig mir bitte",
+    "zeige mir bitte eine", "zeige mir bitte einen",
+    "zeige mir bitte ein", "zeige mir bitte",
+    "zeig mir eine", "zeig mir einen",
+    "zeig mir ein", "zeig mir",
+    "zeige mir eine", "zeige mir einen",
+    "zeige mir ein", "zeige mir",
+    "kannst du mir zeigen", "kannst du zeigen",
+    "können sie mir zeigen", "können sie zeigen",
+    "ich möchte sehen", "ich will sehen",
+    "zeige mir alle", "zeig mir alle",
+    "anzeigen", "zeige", "zeig",
+
+    // ========================================
+    // 3. FRAGEN ZUR PRODUKTSUCHE
+    // ========================================
+    "hast du eine", "hast du einen", "hast du ein",
+    "hast du", "haben sie eine", "haben sie einen",
+    "haben sie ein", "haben sie",
+    "gibt es eine", "gibt es einen", "gibt es ein",
+    "gibt es", "habt ihr eine", "habt ihr einen",
+    "habt ihr ein", "habt ihr",
+    "finde ich eine", "finde ich einen",
+    "finde ich ein", "finde ich",
+    "wo finde ich eine", "wo finde ich einen",
+    "wo finde ich ein", "wo finde ich",
+    "wo gibt es", "wo bekomme ich",
+    "kann ich eine kaufen", "kann ich einen kaufen",
+    "kann ich ein kaufen", "kann ich kaufen",
+    "welche produkte gibt es", "welche produkte habt ihr",
+    "was habt ihr", "was gibt es",
+    "was kann ich kaufen", "was bietet ihr an",
+    "was bieten sie an", "welche artikel gibt es",
+
+    // ========================================
+    // 4. FRAGEN NACH PREISEN
+    // ========================================
+    "wie viel kostet eine", "wie viel kostet einen",
+    "wie viel kostet ein", "wie viel kostet",
+    "wieviel kostet eine", "wieviel kostet einen",
+    "wieviel kostet ein", "wieviel kostet",
+    "was kostet eine", "was kostet einen",
+    "was kostet ein", "was kostet",
+    "wie teuer ist eine", "wie teuer ist einen",
+    "wie teuer ist ein", "wie teuer ist",
+    "wie teuer sind", "wie viel kosten",
+    "wieviel kosten", "was kosten",
+    "nenne mir den preis", "nenn mir den preis",
+    "zeige mir den preis", "preis von",
+    "preis für", "zu welchem preis",
+    "wie hoch ist der preis", "kostet das",
+
+    // ========================================
+    // 5. FRAGEN NACH VERFÜGBARKEIT
+    // ========================================
+    "ist eine verfügbar", "ist ein verfügbar",
+    "ist eine auf lager", "ist ein auf lager",
+    "ist das verfügbar", "ist das vorrätig",
+    "habt ihr das auf lager", "haben sie das auf lager",
+    "ist noch vorhanden", "noch verfügbar",
+    "noch auf lager", "habt ihr noch",
+    "gibt es noch", "kann ich bekommen",
+    "kann ich bestellen", "sofort lieferbar",
+
+    // ========================================
+    // 6. FRAGEN NACH EIGENSCHAFTEN
+    // ========================================
+    "welche eigenschaften hat", "welche funktionen hat",
+    "wie gut ist", "wie groß ist",
+    "wie schwer ist", "wie schnell ist",
+    "wie viel speicher hat", "wie viel ram hat",
+    "hat das produkt", "hat dieser", "hat diese",
+    "hat dieses", "ist dieser", "ist diese",
+    "ist dieses", "welcher ist", "welche ist",
+    "welches ist", "was ist der unterschied",
+    "was sind die unterschiede", "erkläre mir",
+    "beschreibe mir", "mehr informationen über",
+    "informationen zu", "details zu",
+    "technische daten von", "technische daten",
+    "produktdetails", "produktbeschreibung",
+
+    // ========================================
+    // 7. KATEGORIEN UND PRODUKTFILTER
+    // ========================================
+    "ich suche nach monitoren", "suche monitore",
+    "ich suche nach mäusen", "suche mäuse",
+    "ich suche nach tastaturen", "suche tastaturen",
+    "ich suche nach kabeln", "suche kabel",
+    "ich suche nach laptops", "suche laptops",
+    "ich suche nach zubehör", "suche zubehör",
+    "in der kategorie", "aus der kategorie",
+    "aus dem bereich", "im bereich",
+    "zeige die kategorie", "kategorie",
+    "produkte von", "artikel von",
+    "produkte mit", "produkte unter",
+    "produkte über", "günstige produkte",
+    "billige produkte", "teure produkte",
+    "preiswerte produkte", "die günstigsten",
+    "die teuersten", "am billigsten",
+    "am günstigsten", "unter euro",
+    "bis euro", "für weniger als",
+
+    // ========================================
+    // 8. HÖFLICHE WÖRTER UND FÜLLWÖRTER
+    // ========================================
+    "bitte", "danke", "vielen dank",
+    "danke schön", "entschuldigung",
+    "entschuldige", "verzeihung",
+    "mal bitte", "doch bitte",
+    "einmal bitte", "bitte einmal",
+    "ich würde gerne", "ich würde gern",
+    "ich möchte gerne", "ich möchte gern",
+    "ich hätte gern", "ich hätte gerne",
+    "wenn möglich", "wenn es geht",
+    "könntest du bitte", "könntest du",
+    "können sie bitte", "können sie",
+    "kannst du bitte", "kannst du",
+    "würdest du bitte", "würden sie bitte",
+    "für mich", "mir bitte", "mir gerne",
+
+    // ========================================
+    // 9. ALLGEMEINE FÜLLWÖRTER
+    // ========================================
+    "also", "äh", "ähm", "hm", "hmm",
+    "na ja", "naja", "halt", "eben",
+    "eigentlich", "vielleicht", "sozusagen",
+    "irgendwie", "einfach", "wirklich",
+    "gerade", "jetzt", "denn", "doch",
+    "mal", "nur", "noch", "schon",
+    "da", "hier", "dort", "einmal",
+    "bitte mal", "doch mal", "also bitte",
+
+    // ========================================
+    // 10. ARTIKEL UND KLEINE WÖRTER
+    // ========================================
+    "der", "die", "das", "den", "dem",
+    "des", "ein", "eine", "einen",
+    "einem", "einer", "eines",
+    "und", "oder", "aber", "für",
+    "mit", "ohne", "von", "vom",
+    "zum", "zur", "im", "in der",
+    "in dem", "auf dem", "bei den",
+    "zu dem", "zu der", "bitte zeige",
+    "mir den", "mir die", "mir das"
+];
+
     
     fuellwoerter.sort((a, b) => b.length - a.length).forEach(wort => {
         query = query.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
