@@ -175,28 +175,33 @@ function sucheAusfuehrenGlobal() {
     const input = document.getElementById('suchInput');
     if (!input) return;
     
-    let query = input.value.trim();
+    let query = input.value.trim().toLowerCase();
     
-    // 1. Füllwörter entfernen (z. B. "Zeig mir alle Laptops" → "Laptops")
+    // 1. PREIS-FILTER ERKENNEN (z.B. "unter 500", "bis 300 euro", "max 1000")
+    let preisFilter = null;
+    const preisRegex = /(?:unter|bis|max|maximal|höchstens)\s*(\d+)/i;
+    const preisMatch = query.match(preisRegex);
+    
+    if (preisMatch) {
+        preisFilter = parseInt(preisMatch[1]);
+        // Entferne den Preis-Teil aus dem Suchbegriff
+        query = query.replace(preisMatch[0], '').replace(/euro|€/gi, '').trim();
+    }
+
+    // 2. FÜLLWÖRTER ENTFERNEN
     const fuellwoerter = [
-        "zeig mir", "zeige mir", "suche nach", "ich suche", "ich möchte", 
-        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine"
+        "ich suche", "ich möchte", "zeig mir", "zeige mir", "suche nach",
+        "alle", "bitte", "mal", "doch", "den", "die", "das", "ein", "eine", "einen", "einer"
     ];
     
-    let bereinigt = query.toLowerCase();
     fuellwoerter.forEach(wort => {
-        bereinigt = bereinigt.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
+        query = query.replace(new RegExp(`\\b${wort}\\b`, 'gi'), '');
     });
-    bereinigt = bereinigt.trim().replace(/\s+/g, ' ');
-    
-    if (bereinigt.length > 0) {
-        query = bereinigt;
-        input.value = query;
-    }
-    
-    // 2. Englische Begriffe ins Deutsche übersetzen
+    query = query.trim().replace(/\s+/g, ' ');
+
+    // 3. ÜBERSETZUNG (Deutsch -> Englisch)
     const uebersetzungen = {
-       "maus": "mouse",
+        "maus": "mouse",
         "tastatur": "keyboard",
         "kabel": "cable",
         "kopfhörer": "headphones",
@@ -207,16 +212,38 @@ function sucheAusfuehrenGlobal() {
         "festplatte": "ssd"
     };
 
-    let queryLower = query.toLowerCase();
-    if (uebersetzungen[queryLower]) {
-        query = uebersetzungen[queryLower];
-        input.value = query;
+    if (uebersetzungen[query]) {
+        query = uebersetzungen[query];
     }
     
-    // 3. Suche ausführen
-    if (typeof sucheAusfuehren === 'function') {
-        sucheAusfuehren();
+    // Suchfeld aktualisieren
+    input.value = query;
+
+    // 4. SUCHE AUSFÜHREN (mit Preis-Filter)
+    if (typeof zeigeProdukte === 'function' && typeof alleProdukte !== 'undefined') {
+        
+        // Filtere nach Suchbegriff UND Preis
+        let ergebnisse = alleProdukte.filter(p => {
+            const passtName = p.name.toLowerCase().includes(query);
+            const passtPreis = preisFilter === null || p.preis <= preisFilter;
+            return passtName && passtPreis;
+        });
+
+        // Setze Filter-Buttons zurück
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+        const alleBtn = document.querySelector('.filter-btn');
+        if (alleBtn) alleBtn.classList.add('active');
+
+        // Zeige Ergebnisse
+        zeigeProdukte(ergebnisse);
+
+        // Info anzeigen (falls Preisfilter aktiv war)
+        if (preisFilter) {
+            const infoDiv = document.getElementById('suchInfo');
+            if (infoDiv) infoDiv.innerHTML = `Gefiltert nach: <strong>${query || 'Alle'}</strong> bis <strong>${preisFilter} €</strong>`;
+        }
     } else {
+        // Auf anderen Seiten -> Weiterleitung
         if (query) {
             window.location.href = `index.html?suche=${encodeURIComponent(query)}`;
         } else {
