@@ -925,3 +925,31 @@ footer {
         display: none !important;
     }
 }
+
+/* ========================================
+   MIKROFON-BUTTON (PC)
+   ======================================== */
+
+.mic-pc {
+    display: flex;
+    align-items: center;
+}
+
+.mic-pc button {
+    background: transparent;
+    border: none;
+    color: #333;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.mic-pc button:hover {
+    color: #e94560;
+    transform: scale(1.1);
+}
+
+.mic-pc button:focus {
+    outline: none;
+}

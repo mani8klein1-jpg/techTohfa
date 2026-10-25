@@ -301,15 +301,15 @@ function startSpeech() {
     recognition.continuous = true;       // Nach einer Phrase stoppen
     recognition.interimResults = false;   // Nur Endergebnis
     
-    const micBtn = document.getElementById('micBtn');
+        const micBtns = document.querySelectorAll('.mic-pc button');
     const suchInput = document.getElementById('suchInput');
     
     recognition.onstart = function() {
         isListening = true;
-        if (micBtn) {
-            micBtn.classList.add('listening');
-            micBtn.textContent = '🔴';
-        }
+        micBtns.forEach(btn => {
+            btn.classList.add('listening');
+            btn.textContent = '🔴';
+        });
         if (suchInput) suchInput.placeholder = '🎤 Sprich jetzt...';
     };
     
@@ -327,11 +327,13 @@ function startSpeech() {
     
     recognition.onerror = function(event) {
         console.error('Spracherkennungs-Fehler:', event.error);
-        if (micBtn) {
-            micBtn.classList.remove('listening');
-            micBtn.textContent = '🎤';
-        }
         isListening = false;
+        
+        // Button wieder normal machen (bei Fehler)
+        micBtns.forEach(btn => {
+            btn.classList.remove('listening');
+            btn.textContent = '🎤';
+        });
         
         if (event.error === 'not-allowed') {
             alert('Mikrofon-Zugriff verweigert. Bitte erlauben Sie den Zugriff in den Browser-Einstellungen.');
@@ -340,10 +342,13 @@ function startSpeech() {
     
     recognition.onend = function() {
         isListening = false;
-        if (micBtn) {
-            micBtn.classList.remove('listening');
-            micBtn.textContent = '🎤';
-        }
+        
+        // Button wieder normal machen (wenn Zuhören endet)
+        micBtns.forEach(btn => {
+            btn.classList.remove('listening');
+            btn.textContent = '🎤';
+        });
+        
         if (suchInput) suchInput.placeholder = '🔍 Produkte suchen...';
     };
     
