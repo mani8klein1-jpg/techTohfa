@@ -212,21 +212,22 @@ async function sucheAusfuehren() {
     
     const query = input.value.trim();
     
-    // Leere Suche → alle Produkte
-    if (query === '') {
-        zeigeProdukte(alleProdukte);
-        return;
-    }
-    
-    const ergebnisse = await sucheProdukte(query);
-    zeigeProdukte(ergebnisse);
-    
-    // Filter-Buttons zurücksetzen
+    // 1. WICHTIG: Filter IMMER zurücksetzen, egal ob gesucht wird oder nicht
+    aktiveKategorie = null;
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.remove('active');
     });
     const alleBtn = document.querySelector('.filter-btn');
     if (alleBtn) alleBtn.classList.add('active');
+
+    if (query === '') {
+        zeigeProdukte(alleProdukte);
+        return;
+    }
+    
+    // 2. Suchen und anzeigen
+    const ergebnisse = await sucheProdukte(query);
+    zeigeProdukte(ergebnisse);
 }
 
 // Enter-Taste in der Suchleiste
