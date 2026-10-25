@@ -352,7 +352,7 @@ const fuellwoerter = [
     // ========================================
     // 8. HÖFLICHE WÖRTER UND FÜLLWÖRTER
     // ========================================
-    "bitte", "danke", "vielen dank",
+    "bitte", "danke", "vielen dank", "wäre schön", "es wäre schön",
     "danke schön", "entschuldigung",
     "entschuldige", "verzeihung",
     "mal bitte", "doch bitte",
