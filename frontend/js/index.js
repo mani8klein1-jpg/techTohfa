@@ -442,18 +442,55 @@ const fuellwoerter = [
     query = query.trim().replace(/\s+/g, ' ');
 
     // 3. SYNONYME ERKENNEN (Maus, Mouse, Mäuse, Mice)
+    // ========================================
+    // 3. SYNONYME UND PLURAL-FORMEN
+    // ========================================
     const synonyme = {
-        "maus": "mouse", "mäuse": "mouse", "mice": "mouse",
-        "tastatur": "keyboard", "tastaturen": "keyboard",
-        "kabel": "cable", "kabeln": "cable",
-        "kopfhörer": "headphones", "kopfhörern": "headphones",
-        "laptop": "laptop", "laptops": "laptop",
-        "monitor": "monitor", "monitore": "monitor", "bildschirm": "screen", "bildschirme": "screen",
-        "usb": "usb", "festplatte": "ssd", "festplatten": "ssd"
+        // Mäuse
+        "maus": "mouse", "mäuse": "mouse", "mouse": "mouse", "mice": "mouse",
+        // Tastaturen
+        "tastatur": "keyboard", "tastaturen": "keyboard", "keyboard": "keyboard",
+        // Kabel
+        "kabel": "cable", "kabeln": "cable", "cable": "cable",
+        // Kopfhörer
+        "kopfhörer": "headphones", "kopfhörern": "headphones", "headphones": "headphones",
+        // Laptops
+        "laptop": "laptop", "laptops": "laptop", "notebook": "laptop", "notebooks": "laptop",
+        // Monitore
+        "monitor": "monitor", "monitore": "monitor", "monitoren": "monitor",
+        "bildschirm": "screen", "bildschirme": "screen", "screen": "screen",
+        // Festplatten
+        "festplatte": "ssd", "festplatten": "ssd", "ssd": "ssd",
+        // USB
+        "usb": "usb", "usb-kabel": "usb", "usb-c": "usb"
     };
 
-    if (synonyme[query]) {
+    // Plural-Formen entfernen (z.B. "Laptops" → "Laptop")
+    let singular = query;
+    
+    // Spezielle Plural-Regeln für deutsche Wörter
+    singular = singular.replace(/laptops$/i, 'laptop');
+    singular = singular.replace(/monitore$/i, 'monitor');
+    singular = singular.replace(/monitoren$/i, 'monitor');
+    singular = singular.replace(/mäuse$/i, 'maus');
+    singular = singular.replace(/tastaturen$/i, 'tastatur');
+    singular = singular.replace(/kabeln$/i, 'kabel');
+    singular = singular.replace(/kopfhörern$/i, 'kopfhörer');
+    singular = singular.replace(/festplatten$/i, 'festplatte');
+    singular = singular.replace(/bildschirme$/i, 'bildschirm');
+    
+    // Allgemeine Plural-Regel: Endet das Wort auf "s", entferne es
+    if (singular.endsWith('s') && singular.length > 3) {
+        singular = singular.slice(0, -1);
+    }
+
+    // Synonym anwenden (einmal reicht!)
+    if (synonyme[singular]) {
+        query = synonyme[singular];
+    } else if (synonyme[query]) {
         query = synonyme[query];
+    } else {
+        query = singular;
     }
     
     input.value = query;
