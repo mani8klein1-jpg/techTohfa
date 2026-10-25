@@ -228,7 +228,7 @@ const fuellwoerter = [
     // ========================================
     // 1. ICH SUCHE ...
     // ========================================
-    "ich suche eine", "ich suche einen", "ich suche ein",
+    "suche","ich suche eine", "ich suche einen", "ich suche ein",
     "ich suche", "ich bin auf der suche nach",
     "ich suche nach einer", "ich suche nach einem",
     "ich suche nach einem", "ich suche nach",
@@ -375,7 +375,7 @@ const fuellwoerter = [
     "eigentlich", "vielleicht", "sozusagen",
     "irgendwie", "einfach", "wirklich",
     "gerade", "jetzt", "denn", "doch",
-    "mal", "nur", "noch", "schon",
+    "mal", "nur", "noch", "schon", "über",
     "da", "hier", "dort", "einmal",
     "bitte mal", "doch mal", "also bitte",
 
