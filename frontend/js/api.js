@@ -298,7 +298,7 @@ function startSpeech() {
     // Neue Erkennung starten
     recognition = new SpeechRecognition();
     recognition.lang = 'de-DE';           // Deutsch
-    recognition.continuous = false;       // Nach einer Phrase stoppen
+    recognition.continuous = true;       // Nach einer Phrase stoppen
     recognition.interimResults = false;   // Nur Endergebnis
     
     const micBtn = document.getElementById('micBtn');
