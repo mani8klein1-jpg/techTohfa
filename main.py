@@ -119,6 +119,52 @@ def sende_bestaetigungs_email(empfaenger_email: str, kunden_name: str, bestellnu
     except Exception as e:
         print(f"Fehler beim E-Mail-Versand: {e}")
 
+def sende_admin_benachrichtigung(kunden_email: str, kunden_name: str, bestellnummer: int, gesamtpreis: float, positionen: list, adresse: dict):
+    """Sendet eine Benachrichtigung an den Admin über eine neue Bestellung."""
+    api_key = os.getenv("BREVO_API_KEY")
+    sender_email = os.getenv("SMTP_SENDER")
+    admin_email = "mani8klein1@gmail.com" # <-- WICHTIG: Hier deine E-Mail eintragen!
+
+    if not api_key or not sender_email:
+        print("Brevo-Konfiguration fehlt – Admin-E-Mail wird nicht gesendet.")
+        return
+
+    positionen_html = ""
+    for pos in positionen:
+        positionen_html += f"<li>{pos['menge']}x {pos['name']} - {str(round(pos['preis'] * pos['menge'], 2)).replace('.', ',')} €</li>"
+
+    body = f"""
+    <h2>Neue Bestellung eingegangen! 🛒</h2>
+    <p><strong>Bestellnummer:</strong> #{bestellnummer}</p>
+    <p><strong>Kunde:</strong> {kunden_name} ({kunden_email})</p>
+    <p><strong>Lieferadresse:</strong><br>
+    {adresse['vorname']} {adresse['nachname']}<br>
+    {adresse['strasse']}<br>
+    {adresse['plz']} {adresse['ort']}</p>
+    <p><strong>Bestellte Artikel:</strong></p>
+    <ul>{positionen_html}</ul>
+    <p><strong>Gesamtpreis:</strong> {str(round(gesamtpreis, 2)).replace('.', ',')} €</p>
+    <p>Bitte logge dich in den Admin-Bereich ein, um die Bestellung zu bearbeiten.</p>
+    """
+
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": api_key,
+        "content-type": "application/json"
+    }
+    payload = {
+        "sender": {"email": sender_email, "name": "TechTOHFA System"},
+        "to": [{"email": admin_email}],
+        "subject": f"NEUE BESTELLUNG #{bestellnummer} - {kunden_name}",
+        "htmlContent": body
+    }
+
+    try:
+        response = requests.post(url, headers=headers, json=payload)
+        print(f"Admin-Benachrichtigung Status: {response.status_code}")
+    except Exception as e:
+        print(f"Fehler beim Admin-E-Mail-Versand: {e}")
 
 app = FastAPI(title="TechStore API")
 
