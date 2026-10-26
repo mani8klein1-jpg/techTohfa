@@ -492,6 +492,8 @@ def create_bestellung(
             "preis": pos["preis"]
         })
 
+        # (Dein bestehender Code für background_tasks.add_task(sende_bestaetigungs_email...) bleibt hier)
+
     background_tasks.add_task(
         sende_bestaetigungs_email,
         current_user.email,
@@ -500,6 +502,26 @@ def create_bestellung(
         neue_bestellung.gesamtpreis,
         positionen_fuer_email
     )
+
+    # NEU: Benachrichtigung an den Admin senden
+    adress_dict = {
+        "vorname": adresse.vorname,
+        "nachname": adresse.nachname,
+        "strasse": adresse.strasse,
+        "plz": adresse.plz,
+        "ort": adresse.ort
+    }
+    
+    background_tasks.add_task(
+        sende_admin_benachrichtigung,
+        current_user.email,
+        f"{adresse.vorname} {adresse.nachname}",
+        neue_bestellung.id,
+        neue_bestellung.gesamtpreis,
+        positionen_fuer_email,
+        adress_dict
+    )
+
     return neue_bestellung
 
 @app.get("/bestellungen", response_model=List[schemas.BestellungResponse])
