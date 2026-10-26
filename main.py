@@ -131,20 +131,81 @@ def sende_admin_benachrichtigung(kunden_email: str, kunden_name: str, bestellnum
 
     positionen_html = ""
     for pos in positionen:
-        positionen_html += f"<li>{pos['menge']}x {pos['name']} - {str(round(pos['preis'] * pos['menge'], 2)).replace('.', ',')} €</li>"
+        positionen_html += f"""
+        <tr>
+            <td>{pos['name']}</td>
+            <td style="text-align: center;">{pos['menge']}</td>
+            <td style="text-align: right;">{str(round(pos['preis'] * pos['menge'], 2)).replace('.', ',')} €</td>
+        </tr>
+        """
+        
+        body = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {{ font-family: 'Roboto Condensed', Arial, sans-serif; background-color: #f5f5f5; margin: 0; padding: 0; }}
+            .container {{ max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+            .header {{ background-color: #1a1a1a; padding: 20px; text-align: center; }}
+            .header h1 {{ color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 2px; }}
+            .header h1 span {{ color: #e94560; }}
+            .content {{ padding: 30px; color: #333333; }}
+            .content h2 {{ font-size: 20px; margin-bottom: 20px; color: #1a1a1a; border-bottom: 2px solid #e94560; padding-bottom: 10px; }}
+            .info-box {{ background: #f9f9f9; border-left: 4px solid #e94560; padding: 15px; margin-bottom: 20px; border-radius: 4px; }}
+            .info-box p {{ margin: 5px 0; font-size: 15px; }}
+            .info-box strong {{ color: #1a1a1a; }}
+            .order-table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+            .order-table th {{ background: #1a1a1a; color: #ffffff; padding: 10px; text-align: left; font-size: 14px; }}
+            .order-table td {{ padding: 10px; border-bottom: 1px solid #eee; font-size: 14px; }}
+            .total {{ text-align: right; font-size: 18px; font-weight: bold; color: #e94560; margin-top: 20px; }}
+            .footer {{ background-color: #f9f9f9; padding: 20px; text-align: center; font-size: 12px; color: #888888; }}
+            .btn {{ display: inline-block; padding: 12px 24px; background-color: #e94560; color: #ffffff; text-decoration: none; border-radius: 4px; font-weight: bold; margin-top: 20px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1>TECH<span>TOHFA</span> ADMIN</h1>
+            </div>
+            <div class="content">
+                <h2>Neue Bestellung eingegangen! 🛒</h2>
+                
+                <div class="info-box">
+                    <p><strong>Bestellnummer:</strong> #{bestellnummer}</p>
+                    <p><strong>Kunde:</strong> {kunden_name} ({kunden_email})</p>
+                </div>
 
-    body = f"""
-    <h2>Neue Bestellung eingegangen! 🛒</h2>
-    <p><strong>Bestellnummer:</strong> #{bestellnummer}</p>
-    <p><strong>Kunde:</strong> {kunden_name} ({kunden_email})</p>
-    <p><strong>Lieferadresse:</strong><br>
-    {adresse['vorname']} {adresse['nachname']}<br>
-    {adresse['strasse']}<br>
-    {adresse['plz']} {adresse['ort']}</p>
-    <p><strong>Bestellte Artikel:</strong></p>
-    <ul>{positionen_html}</ul>
-    <p><strong>Gesamtpreis:</strong> {str(round(gesamtpreis, 2)).replace('.', ',')} €</p>
-    <p>Bitte logge dich in den Admin-Bereich ein, um die Bestellung zu bearbeiten.</p>
+                <div class="info-box" style="border-left-color: #1a1a1a;">
+                    <p><strong>Lieferadresse:</strong></p>
+                    <p>{adresse['vorname']} {adresse['nachname']}<br>
+                    {adresse['strasse']}<br>
+                    {adresse['plz']} {adresse['ort']}</p>
+                </div>
+
+                <h3>Bestellte Artikel:</h3>
+                <table class="order-table">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th style="text-align: center;">Menge</th>
+                            <th style="text-align: right;">Preis</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {positionen_html}
+                    </tbody>
+                </table>
+                <div class="total">Gesamt: {str(round(gesamtpreis, 2)).replace('.', ',')} €</div>
+                
+                <p style="margin-top: 30px;">Bitte logge dich in den Admin-Bereich ein, um die Bestellung zu bearbeiten und zu versenden.</p>
+            </div>
+            <div class="footer">
+                &copy; 2026 TechTOHFA - Admin-System
+            </div>
+        </div>
+    </body>
+    </html>
     """
 
     url = "https://api.brevo.com/v3/smtp/email"
