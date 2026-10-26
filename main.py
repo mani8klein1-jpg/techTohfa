@@ -123,7 +123,7 @@ def sende_admin_benachrichtigung(kunden_email: str, kunden_name: str, bestellnum
     """Sendet eine Benachrichtigung an den Admin über eine neue Bestellung."""
     api_key = os.getenv("BREVO_API_KEY")
     sender_email = os.getenv("SMTP_SENDER")
-    admin_email = "mani8klein1@gmail.com" # <-- WICHTIG: Hier deine E-Mail eintragen!
+    admin_email = "mani8klein1@gmail.com" # Meine E-Mail!
 
     if not api_key or not sender_email:
         print("Brevo-Konfiguration fehlt – Admin-E-Mail wird nicht gesendet.")
